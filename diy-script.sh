@@ -12,8 +12,6 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_gener
 # 删除ipv6前缀
 sed -i 's/auto//' package/base-files/files/bin/config_generate
 
-cp -f $GITHUB_WORKSPACE/script/011-fix-mbo-modules-build.patch package/network/services/hostapd/patches/011-fix-mbo-modules-build.patch
-
 # 移除要替换的包
 rm -rf feeds/packages/net/mosdns
 rm -rf feeds/packages/net/msd_lite
@@ -109,7 +107,7 @@ orig_version=$(cat "package/lean/default-settings/files/zzz-default-settings" | 
 sed -i "s/${orig_version}/R${date_version} by yasui/g" package/lean/default-settings/files/zzz-default-settings
 
 # 修复 hostapd 报错
-cp -f $GITHUB_WORKSPACE/scripts/011-fix-mbo-modules-build.patch package/network/services/hostapd/patches/011-fix-mbo-modules-build.patch
+cp -f $GITHUB_WORKSPACE/script/011-fix-mbo-modules-build.patch package/network/services/hostapd/patches/011-fix-mbo-modules-build.patch
 
 # 修复 armv8 设备 xfsprogs 报错
 sed -i 's/TARGET_CFLAGS.*/TARGET_CFLAGS += -DHAVE_MAP_SYNC -D_LARGEFILE64_SOURCE/g' feeds/packages/utils/xfsprogs/Makefile
