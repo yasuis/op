@@ -53,10 +53,6 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-a
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
 
 # Themes
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci-light/Makefile
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci-nginx/Makefile
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci-ssl-nginx/Makefile
 git clone --depth=1 -b https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
 git clone -b master https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
 git clone -b master https://github.com/jerrykuku/luci-theme-argon-config.git luci-app-argon-config
