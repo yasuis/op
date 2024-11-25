@@ -48,14 +48,14 @@ git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/l
 
 # 科学上网插件
 git clone --depth=1 https://github.com/fw876/helloworld.git package/luci-app-ssr-plus
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages.git;main package/openwrt-passwall
-git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall.git;main package/luci-app-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall.git package/luci-app-passwall
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
 
 # Themes
 git clone --depth=1 -b https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
-git clone -b master https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
-git clone -b master https://github.com/jerrykuku/luci-theme-argon-config.git luci-app-argon-config
+git clone https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
+git clone https://github.com/jerrykuku/luci-theme-argon-config.git luci-app-argon-config
 git clone --depth=1 https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom package/luci-theme-infinityfreedom
 git_sparse_clone main https://github.com/haiibo/packages luci-theme-atmaterial luci-theme-opentomcat luci-theme-netgear
 
