@@ -53,11 +53,8 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall.git package/lu
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
 
 # Themes
-git clone --depth=1 -b https://github.com/kiddin9/luci-theme-edge package/luci-theme-edge
-git clone https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
-git clone https://github.com/jerrykuku/luci-theme-argon-config.git luci-app-argon-config
-git clone --depth=1 https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom package/luci-theme-infinityfreedom
-git_sparse_clone main https://github.com/haiibo/packages luci-theme-atmaterial luci-theme-opentomcat luci-theme-netgear
+git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
+git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
 
 # 更改 Argon 主题背景
 cp -f $GITHUB_WORKSPACE/images/bg1.jpg package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
