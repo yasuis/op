@@ -7,7 +7,7 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/luci2/bin/config_gener
 # sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
 
 # TTYD 免登录
-# sed -i 's|/bin/login|/bin/login -f root|g' feeds/packages/utils/ttyd/files/ttyd.config
+sed -i 's/\/bin\/login/\/bin\/login -f root/' feeds/packages/utils/ttyd/files/ttyd.config
 
 # 删除ipv6前缀
 sed -i 's/auto//' package/base-files/files/bin/config_generate
@@ -23,6 +23,7 @@ rm -rf feeds/luci/themes/luci-theme-netgear
 rm -rf feeds/luci/applications/luci-app-mosdns
 rm -rf feeds/luci/applications/luci-app-netdata
 rm -rf feeds/luci/applications/luci-app-serverchan
+rm -rf feeds/luci/applications/luci-app-smartdns
 rm -rf feeds/package/helloworld
 rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/v2ray-geodata
@@ -46,9 +47,9 @@ git_sparse_clone main https://github.com/Lienol/openwrt-package luci-app-filebro
 git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 
 # 科学上网插件
+rm -rf feeds/luci/applications/luci-app-passwall
+merge_package main https://github.com/xiaorouji/openwrt-passwall package/custom luci-app-passwall
 git clone --depth=1 https://github.com/fw876/helloworld.git package/luci-app-ssr-plus
-git clone --depth=1 -b main https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall
-git clone --depth=1 -b main https://github.com/xiaorouji/openwrt-passwall.git package/luci-app-passwall
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
 
 # Themes
@@ -78,7 +79,11 @@ git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mo
 git clone --depth=1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
 
 # Alist
-git clone --depth=1 https://github.com/sbwml/luci-app-alist package/luci-app-alist
+rm -rf feeds/packages/lang/golang
+rm -rf feeds/packages/net/alist
+rm -rf feeds/luci/applications/luci-app-alist
+git clone --depth=1 https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
+git clone --depth=1 https://github.com/sbwml/luci-app-alist package/alist
 
 # DDNS.to
 git_sparse_clone main https://github.com/linkease/nas-packages-luci luci/luci-app-ddnsto
