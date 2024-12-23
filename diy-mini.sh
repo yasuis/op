@@ -21,6 +21,11 @@ rm -rf feeds/luci/applications/luci-app-serverchan
 rm -rf package/helloworld
 rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/v2ray-geodata
+rm -rf feeds/luci/applications/luci-app-passwall
+rm -rf feeds/packages/net/chinadns-ng
+rm -rf feeds/packages/net/ddns-go
+rm -rf feeds/packages/net/xray-core
+rm -rf feeds/packages/net/sing-box
 
 # Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {
@@ -42,8 +47,8 @@ git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/l
 
 # 科学上网插件
 git clone --depth=1 https://github.com/fw876/helloworld.git package/luci-app-ssr-plus
-git clone --depth=1 -b main https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall
-git clone --depth=1 -b main https://github.com/xiaorouji/openwrt-passwall.git package/luci-app-passwall
+git clone -b main https://github.com/xiaorouji/openwrt-passwall package/psw
+git clone https://github.com/xiaorouji/openwrt-passwall-packages package/pswcore
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
 
 # Themes
