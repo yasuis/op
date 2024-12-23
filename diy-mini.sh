@@ -23,7 +23,6 @@ rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/v2ray-geodata
 rm -rf feeds/luci/applications/luci-app-passwall
 rm -rf feeds/packages/net/chinadns-ng
-rm -rf feeds/packages/net/ddns-go
 rm -rf feeds/packages/net/xray-core
 rm -rf feeds/packages/net/sing-box
 
