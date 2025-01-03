@@ -10,7 +10,7 @@ sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/luci2/bin/config_gener
 sed -i 's/\/bin\/login/\/bin\/login -f root/' feeds/packages/utils/ttyd/files/ttyd.config
 
 # 删除ipv6前缀
-sed -i 's/auto//' package/base-files/files/bin/config_generate
+sed -i 's/auto//' package/base-files/luci2/bin/config_generate
 
 # 移除要替换的包
 rm -rf feeds/packages/net/mosdns
