@@ -87,10 +87,10 @@ git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mo
 git clone --depth=1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
 
 # Alist
-rm -rf feeds/packages/net/alist
-rm -rf feeds/luci/applications/luci-app-alist
-git clone --depth=1 https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
-git clone --depth=1 https://github.com/sbwml/luci-app-alist package/alist
+# rm -rf feeds/packages/net/alist
+# rm -rf feeds/luci/applications/luci-app-alist
+# git clone --depth=1 https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
+# git clone --depth=1 https://github.com/sbwml/luci-app-alist package/alist
 
 # DDNS.to
 git_sparse_clone main https://github.com/linkease/nas-packages-luci luci/luci-app-ddnsto
