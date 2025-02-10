@@ -41,7 +41,6 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android $AGENT_TOOLSDIRECTORY
         sudo -E apt-get -qq update
         sudo -E apt-get -y install $(curl -fsSL is.gd/depends_ubuntu_2204)
         wget https://bootstrap.pypa.io/pip/3.6/get-pip.py
