@@ -13,8 +13,8 @@
 - 项目大部分代码拉取自 [haiibo](https://github.com/haiibo/OpenWrt) 的 Openwrt 云编译项目
 - 固件默认管理地址：`192.168.100.1` 默认用户：`root` 默认密码：`password`
 - 提供适配于 ARMv8 电视盒子、Rockchip 平台、树莓派4以及 X86 平台设备的 OpenWrt 固件
-- ARMv8 盒子固件为 [Mini版](https://github.com/yasuis/OpenWrt/releases/tag/ARMv8_MINI) ，以科学上网为主，包含 [F大](https://github.com/unifreq/openwrt_packit) 发布的所有已适配的盒子固件
-- 固件集成的所有 ipk 插件全部打包在 Packages 文件中，可以在 [Releases](https://github.com/yasuis/OpenWrt/releases) 内进行下载
+- ARMv8 盒子固件为 [Mini版](https://github.com/yasuis/op/releases/tag/ARMv8_MINI) ，以科学上网为主，包含 [F大](https://github.com/unifreq/openwrt_packit) 发布的所有已适配的盒子固件
+- 固件集成的所有 ipk 插件全部打包在 Packages 文件中，可以在 [Releases](https://github.com/yasuis/op/releases) 内进行下载
 - 项目编译的固件插件为最新版本，最新版插件可能有 BUG，如果之前使用稳定则无需追新
 
 
