@@ -198,7 +198,7 @@ jobs:
         body: |
           **This is Temporary Firmware for Armvirt 64**
           ### 📒 固件信息
-          - 🚀 成品固件点击此处跳转➦[MINI](https://github.com/haiibo/OpenWrt/releases/tag/ARMv8_MINI)即可下载
+          - 🚀 成品固件点击此处跳转➦[MINI](https://github.com/yasuis/op/releases/tag/ARMv8_MINI)即可下载
           - 💻 平台架构: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }} (精简版临时固件)
           - ⚽ 固件源码: ${{ env.REPO_URL }}
           - 💝 源码分支: ${{ env.REPO_BRANCH }}
