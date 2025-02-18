@@ -234,6 +234,27 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
+    - name: 释放磁盘空间
+      uses: jlumbroso/free-disk-space@main
+      with:
+         # this might remove tools that are actually needed,
+         # if set to "true" but frees about 6 GB
+            tool-cache: true
+         # all of these default to true, but feel free to set to
+         # "false" if necessary for your workflow
+            android: true
+            dotnet: true
+            haskell: true
+            large-packages: true
+            swap-storage: true
+        
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
     - name: Initialization Environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -265,7 +286,7 @@ jobs:
         OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*rootfs.tar.gz
         PACKAGE_SOC: all
         WHOAMI: yasui
-        KERNEL_VERSION_NAME: 6.6.74
+        KERNEL_VERSION_NAME: 6.12.12
         KERNEL_AUTO_LATEST: true
         DISTRIB_REVISION: R${{ env.DATE1 }} by yasui
 
