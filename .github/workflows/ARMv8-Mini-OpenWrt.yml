@@ -55,6 +55,20 @@ jobs:
         sudo rm -f /swapfile
         sudo apt clean
         df -h
+
+    - name: 最大化编译空间
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 4096
+        swap-size-mb: 1024
+        temp-reserve-mb: 200
+        build-mount-path: /workdir
+        overprovision-lvm: 'true'
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
         
     - name: Check Server Performance
       run: |
@@ -75,7 +89,6 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
@@ -266,7 +279,6 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
