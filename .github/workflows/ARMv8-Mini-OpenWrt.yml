@@ -297,6 +297,8 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           sudo -E apt install clang
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
 
     - name: Download Armvirt Firmware
       id: download
