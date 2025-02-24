@@ -89,13 +89,14 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
-          sudo -E apt-get -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-make-openwrt)
+          sudo -E apt-get -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-build-armbian)
           sudo -E systemctl daemon-reload
           #sudo -E apt-get -y full-upgrade
           sudo -E apt-get -y autoremove --purge
@@ -103,6 +104,7 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
+          echo "status=success" >> ${GITHUB_OUTPUT}
           sudo -E apt install clang
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
@@ -282,13 +284,14 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
-          sudo -E apt-get -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-make-openwrt)
+          sudo -E apt-get -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-build-armbian)
           sudo -E systemctl daemon-reload
           #sudo -E apt-get -y full-upgrade
           sudo -E apt-get -y autoremove --purge
@@ -296,6 +299,7 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
+          echo "status=success" >> ${GITHUB_OUTPUT}
           sudo -E apt install clang
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
@@ -315,8 +319,8 @@ jobs:
       if: steps.download.outputs.status == 'success'
       uses: unifreq/openwrt_packit@master
       env:
-        OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*rootfs.tar.gz
-        PACKAGE_SOC: all
+        OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*.tar.gz
+        PACKAGE_SOC: e52c_r66s_r68s_s905d
         WHOAMI: yasui
         KERNEL_VERSION_NAME: 6.12.12
         KERNEL_AUTO_LATEST: true
