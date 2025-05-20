@@ -345,7 +345,7 @@ jobs:
       if: steps.download.outputs.status == 'success'
       uses: unifreq/openwrt_packit@master
       env:
-        OPENWRT_ARMSR: https://github.com/sbwml/builder/releases/download/v24.10.1/openwrt-24.10.1-armsr-armv8-generic-rootfs.tar.gz
+        OPENWRT_ARMSR: https://github.com/yasuis/op/releases/download/ROOTFS_MINI/openwrt-armsr-armv8-generic-rootfs.tar.gz
         PACKAGE_SOC: all
         WHOAMI: yasui
         KERNEL_VERSION_NAME: 6.12.15
