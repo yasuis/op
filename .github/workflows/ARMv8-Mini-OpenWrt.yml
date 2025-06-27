@@ -117,30 +117,12 @@ jobs:
         echo "--------------------------硬盘信息--------------------------"
         echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
 
-    - name: Create simulated physical disk
-      run: |
-          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
-          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
-          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
-          sudo truncate -s "${root_size}"G /root.img
-          sudo losetup /dev/loop6 /mnt/mnt.img
-          sudo losetup /dev/loop7 /root.img
-          sudo pvcreate /dev/loop6
-          sudo pvcreate /dev/loop7
-          sudo vgcreate github /dev/loop6 /dev/loop7
-          sudo lvcreate -n runner -l 100%FREE github
-          sudo mkfs.xfs /dev/github/runner
-          sudo mkdir -p /builder
-          sudo mount /dev/github/runner /builder
-          sudo chown -R runner.runner /builder
-          df -Th
-          
     - name: Initialization Environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android 2>/dev/null
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
@@ -153,12 +135,12 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
-          echo "status=success" >> ${GITHUB_OUTPUT}
-
-
+          sudo -E apt install clang
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
 
     - name: Clone Source Code
-      working-directory: /builder
+      working-directory: /workdir
       id: clone
       run: |
         df -hT $GITHUB_WORKSPACE
@@ -179,7 +161,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_OUTPUT
 
     - name: Generate Variables
-      working-directory: /builder
+      working-directory: /workdir
       id: variable
       run: |
         cp $CONFIG_FILE $OPENWRT_PATH/.config
@@ -203,7 +185,7 @@ jobs:
         prefix: ${{ env.OPENWRT_PATH }}
 
     - name: Install Feeds
-      working-directory: /builder
+      working-directory: /workdir
       run: |
         cd $OPENWRT_PATH
         ./scripts/feeds update -a
@@ -222,7 +204,7 @@ jobs:
         $GITHUB_WORKSPACE/scripts/preset-terminal-tools.sh
 
     - name: Download DL Package
-      working-directory: /builder
+      working-directory: /workdir
       run: |
         cd $OPENWRT_PATH
         make defconfig
@@ -231,7 +213,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
 
     - name: Compile Firmware
-      working-directory: /builder
+      working-directory: /workdir
       id: compile
       run: |
         cd $OPENWRT_PATH
@@ -244,7 +226,7 @@ jobs:
         echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
 
     - name: Check Space Usage
-      working-directory: /builder
+      working-directory: /workdir
       if: (!cancelled())
       run: df -hT
 
@@ -256,7 +238,7 @@ jobs:
         path: ${{ env.OPENWRT_PATH }}/bin
 
     - name: Organize Files
-      working-directory: /builder
+      working-directory: /workdir
       if: steps.compile.outputs.status == 'success'
       run: |
         cd $OPENWRT_PATH/bin/targets/*/*
@@ -338,7 +320,6 @@ jobs:
       env:
           DEBIAN_FRONTEND: noninteractive
       run: |
-          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
@@ -354,28 +335,10 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           echo "status=success" >> ${GITHUB_OUTPUT}
-
-    - name: Create simulated physical disk
-      run: |
-          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
-          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
-          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
-          sudo truncate -s "${root_size}"G /root.img
-          sudo losetup /dev/loop6 /mnt/mnt.img
-          sudo losetup /dev/loop7 /root.img
-          sudo pvcreate /dev/loop6
-          sudo pvcreate /dev/loop7
-          sudo vgcreate github /dev/loop6 /dev/loop7
-          sudo lvcreate -n runner -l 100%FREE github
-          sudo mkfs.xfs /dev/github/runner
-          sudo mkdir -p /builder
-          sudo mount /dev/github/runner /builder
-          sudo chown -R runner.runner /builder
-          df -Th
           
     - name: Download armvirt Firmware
       id: download
-      working-directory: /builder
+      working-directory: /workdir
       run: |
         armvirt_tarfile_path="openwrt/bin/targets/armvirt/64"
         [[ -d "${armvirt_tarfile_path}" ]] || mkdir -p ${armvirt_tarfile_path}
@@ -406,7 +369,7 @@ jobs:
           echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Clone packit source code
-      working-directory: /builder
+      working-directory: /workdir
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
           SCRIPT_REPO_URL="https://github.com/unifreq/openwrt_packit"
