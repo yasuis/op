@@ -327,13 +327,11 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           sudo -E apt install clang
-          sudo mkdir -p /workdir
-          sudo chown $USER:$GROUPS /workdir
 
     - name: Download ARMSR Firmware
       id: download
       run: |
-        FIRMWARE_PATH=workdir/openwrt/bin/targets/armvirt/64
+        FIRMWARE_PATH=openwrt/bin/targets/armvirt/64
         [ -d $FIRMWARE_PATH ] || mkdir -p $FIRMWARE_PATH
         cd $FIRMWARE_PATH
         wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
@@ -345,7 +343,7 @@ jobs:
       if: steps.download.outputs.status == 'success'
       uses: unifreq/openwrt_packit@master
       env:
-        OPENWRT_ARMSR: workdir/openwrt/bin/targets/*/*/*rootfs.tar.gz
+        OPENWRT_ARMSR: openwrt/bin/targets/*/*/*rootfs.tar.gz
         PACKAGE_SOC: all
         WHOAMI: yasui
         KERNEL_VERSION_NAME: 6.12.29
