@@ -121,8 +121,9 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
-          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
@@ -135,12 +136,28 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
-          sudo -E apt install clang
-          sudo mkdir -p /workdir
-          sudo chown $USER:$GROUPS /workdir
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+    - name: Create simulated physical disk
+      run: |
+          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
+          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
+          sudo truncate -s "${root_size}"G /root.img
+          sudo losetup /dev/loop6 /mnt/mnt.img
+          sudo losetup /dev/loop7 /root.img
+          sudo pvcreate /dev/loop6
+          sudo pvcreate /dev/loop7
+          sudo vgcreate github /dev/loop6 /dev/loop7
+          sudo lvcreate -n runner -l 100%FREE github
+          sudo mkfs.xfs /dev/github/runner
+          sudo mkdir -p /builder
+          sudo mount /dev/github/runner /builder
+          sudo chown -R runner.runner /builder
+          df -Th
 
     - name: Clone Source Code
-      working-directory: /workdir
+      working-directory: /builder
       id: clone
       run: |
         df -hT $GITHUB_WORKSPACE
@@ -161,6 +178,7 @@ jobs:
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_OUTPUT
 
     - name: Generate Variables
+      working-directory: /builder
       id: variable
       run: |
         cp $CONFIG_FILE $OPENWRT_PATH/.config
@@ -176,6 +194,7 @@ jobs:
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_OUTPUT
 
     - name: Cache Toolchain
+      working-directory: /builder
       if: env.CACHE_TOOLCHAIN == 'true'
       uses: HiGarfield/cachewrtbuild@main
       with:
@@ -184,12 +203,14 @@ jobs:
         prefix: ${{ env.OPENWRT_PATH }}
 
     - name: Install Feeds
+      working-directory: /builder
       run: |
         cd $OPENWRT_PATH
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
     - name: Load Custom Configuration
+      working-directory: /builder
       run: |
         [ -e files ] && mv files $OPENWRT_PATH/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRT_PATH/.config
@@ -201,6 +222,7 @@ jobs:
         $GITHUB_WORKSPACE/scripts/preset-terminal-tools.sh
 
     - name: Download DL Package
+      working-directory: /builder
       run: |
         cd $OPENWRT_PATH
         make defconfig
@@ -209,6 +231,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
 
     - name: Compile Firmware
+      working-directory: /builder
       id: compile
       run: |
         cd $OPENWRT_PATH
@@ -221,10 +244,12 @@ jobs:
         echo "FILE_DATE=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
 
     - name: Check Space Usage
+      working-directory: /builder
       if: (!cancelled())
       run: df -hT
 
     - name: Upload Bin Directory
+      working-directory: /builder
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       uses: actions/upload-artifact@main
       with:
@@ -232,6 +257,7 @@ jobs:
         path: ${{ env.OPENWRT_PATH }}/bin
 
     - name: Organize Files
+      working-directory: /builder
       if: steps.compile.outputs.status == 'success'
       run: |
         cd $OPENWRT_PATH/bin/targets/*/*
@@ -243,6 +269,7 @@ jobs:
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
 
     - name: Upload Firmware To Artifact
+      working-directory: /builder
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE != 'true'
       uses: actions/upload-artifact@main
       with:
@@ -250,6 +277,7 @@ jobs:
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: Upload Firmware To Release
+      working-directory: /builder
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
       uses: ncipollo/release-action@v1
       with:
@@ -307,13 +335,15 @@ jobs:
         sudo rm -f /swapfile
         sudo apt clean
         df -h
-
-    - name: Initialization Environment
+ 
+    - name: Initialization environment
+      id: init
       env:
-        DEBIAN_FRONTEND: noninteractive
+          DEBIAN_FRONTEND: noninteractive
       run: |
+          docker rmi $(docker images -q) 2>/dev/null
           [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
-          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android 2>/dev/null
           sudo swapoff -a
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -y update
@@ -326,22 +356,71 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
-          sudo -E apt install clang
+          echo "status=success" >> ${GITHUB_OUTPUT}
 
-    - name: Download ARMSR Firmware
-      id: download
+    - name: Create simulated physical disk
       run: |
-        FIRMWARE_PATH=openwrt/bin/targets/armvirt/64
-        [ -d $FIRMWARE_PATH ] || mkdir -p $FIRMWARE_PATH
-        cd $FIRMWARE_PATH
-        wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
-        echo "status=success" >> $GITHUB_OUTPUT
-        echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
-        echo "DATE1=$(date +"%y.%m.%d")" >> $GITHUB_ENV
+          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
+          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
+          sudo truncate -s "${root_size}"G /root.img
+          sudo losetup /dev/loop6 /mnt/mnt.img
+          sudo losetup /dev/loop7 /root.img
+          sudo pvcreate /dev/loop6
+          sudo pvcreate /dev/loop7
+          sudo vgcreate github /dev/loop6 /dev/loop7
+          sudo lvcreate -n runner -l 100%FREE github
+          sudo mkfs.xfs /dev/github/runner
+          sudo mkdir -p /builder
+          sudo mount /dev/github/runner /builder
+          sudo chown -R runner.runner /builder
+          df -Th
+          
+    - name: Download armvirt Firmware
+      id: download
+      working-directory: /builder
+      run: |
+        armvirt_tarfile_path="openwrt/bin/targets/armvirt/64"
+        [[ -d "${armvirt_tarfile_path}" ]] || mkdir -p ${armvirt_tarfile_path}
+          ln -sf /builder/openwrt ${GITHUB_WORKSPACE}/openwrt
 
+          latest_version=$(curl -s \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                https://api.github.com/repos/${armvirt_tarfile_repo}/releases?per_page=100 | \
+                jq -r --arg RTK "${releases_tag_keywords}" \
+                --arg BOARD "-rootfs.tar.gz" \
+                '[.[] | select(.tag_name | contains($RTK))] |
+                map(.assets[] | select(.browser_download_url | endswith($BOARD))) |
+                sort_by(.updated_at) |
+                reverse |
+                .[0] |
+                {data: .updated_at, url: .browser_download_url}')
+
+          [[ -z "${latest_version}" || "${latest_version}" == "null" ]] && echo "Invalid OpenWrt rootfs download address." && exit 1
+          latest_updated_at="$(echo ${latest_version} | jq -r '.data')"
+          latest_url="$(echo ${latest_version} | jq -r '.url')"
+
+          openwrt_filename="${latest_url##*/}"
+          curl -fsSL "${latest_url}" -o "${armvirt_tarfile_path}/${openwrt_filename}"
+          [[ "${?}" -ne "0" ]] && echo "Invalid OpenWrt rootfs download address." && exit 1
+
+          echo "build_tag=${releases_tag_keywords}_${{ inputs.openwrt_storage }}_$(date +"%Y.%m")" >> ${GITHUB_OUTPUT}
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+    - name: Clone packit source code
+      working-directory: /builder
+      if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+      run: |
+          SCRIPT_REPO_URL="https://github.com/unifreq/openwrt_packit"
+          SCRIPT_REPO_BRANCH="master"
+          SELECT_PACKITPATH="openwrt_packit"
+          git clone -q --single-branch --depth=1 --branch=${SCRIPT_REPO_BRANCH} ${SCRIPT_REPO_URL} ${SELECT_PACKITPATH}
+          ln -sf /builder/${SELECT_PACKITPATH} /opt/${SELECT_PACKITPATH}
+          
     - name: Package OpenWrt Firmware
-      if: steps.download.outputs.status == 'success'
       uses: unifreq/openwrt_packit@master
+      if: ${{ steps.download.outputs.status }} == 'success' && !cancelled()
       env:
         OPENWRT_ARMSR: openwrt/bin/targets/*/*/*rootfs.tar.gz
         PACKAGE_SOC: all
