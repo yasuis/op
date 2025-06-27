@@ -194,7 +194,6 @@ jobs:
         echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_OUTPUT
 
     - name: Cache Toolchain
-      working-directory: /builder
       if: env.CACHE_TOOLCHAIN == 'true'
       uses: HiGarfield/cachewrtbuild@main
       with:
@@ -249,7 +248,6 @@ jobs:
       run: df -hT
 
     - name: Upload Bin Directory
-      working-directory: /builder
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       uses: actions/upload-artifact@main
       with:
@@ -269,7 +267,6 @@ jobs:
         echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
 
     - name: Upload Firmware To Artifact
-      working-directory: /builder
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE != 'true'
       uses: actions/upload-artifact@main
       with:
@@ -277,7 +274,6 @@ jobs:
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: Upload Firmware To Release
-      working-directory: /builder
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
       uses: ncipollo/release-action@v1
       with:
