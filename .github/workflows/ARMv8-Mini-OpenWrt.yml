@@ -340,44 +340,14 @@ jobs:
       id: download
       working-directory: /workdir
       run: |
-        armvirt_tarfile_path="openwrt/bin/targets/armvirt/64"
-        [[ -d "${armvirt_tarfile_path}" ]] || mkdir -p ${armvirt_tarfile_path}
-          ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
+        FIRMWARE_PATH=openwrt/bin/targets/armvirt/64
+        [ -d $FIRMWARE_PATH ] || mkdir -p $FIRMWARE_PATH
+        cd $FIRMWARE_PATH
+        wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
+        echo "status=success" >> $GITHUB_OUTPUT
+        echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+        echo "DATE1=$(date +"%y.%m.%d")" >> $GITHUB_ENV
 
-          latest_version=$(curl -s \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                https://api.github.com/repos/${armvirt_tarfile_repo}/releases?per_page=100 | \
-                jq -r --arg RTK "${releases_tag_keywords}" \
-                --arg BOARD "-rootfs.tar.gz" \
-                '[.[] | select(.tag_name | contains($RTK))] |
-                map(.assets[] | select(.browser_download_url | endswith($BOARD))) |
-                sort_by(.updated_at) |
-                reverse |
-                .[0] |
-                {data: .updated_at, url: .browser_download_url}')
-
-          [[ -z "${latest_version}" || "${latest_version}" == "null" ]] && echo "Invalid OpenWrt rootfs download address." && exit 1
-          latest_updated_at="$(echo ${latest_version} | jq -r '.data')"
-          latest_url="$(echo ${latest_version} | jq -r '.url')"
-
-          openwrt_filename="${latest_url##*/}"
-          curl -fsSL "${latest_url}" -o "${armvirt_tarfile_path}/${openwrt_filename}"
-          [[ "${?}" -ne "0" ]] && echo "Invalid OpenWrt rootfs download address." && exit 1
-
-          echo "build_tag=${releases_tag_keywords}_${{ inputs.openwrt_storage }}_$(date +"%Y.%m")" >> ${GITHUB_OUTPUT}
-          echo "status=success" >> ${GITHUB_OUTPUT}
-
-    - name: Clone packit source code
-      working-directory: /workdir
-      if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
-      run: |
-          SCRIPT_REPO_URL="https://github.com/unifreq/openwrt_packit"
-          SCRIPT_REPO_BRANCH="master"
-          SELECT_PACKITPATH="openwrt_packit"
-          git clone -q --single-branch --depth=1 --branch=${SCRIPT_REPO_BRANCH} ${SCRIPT_REPO_URL} ${SELECT_PACKITPATH}
-          ln -sf /builder/${SELECT_PACKITPATH} /opt/${SELECT_PACKITPATH}
-          
     - name: Package OpenWrt Firmware
       uses: unifreq/openwrt_packit@master
       if: ${{ steps.download.outputs.status }} == 'success' && !cancelled()
