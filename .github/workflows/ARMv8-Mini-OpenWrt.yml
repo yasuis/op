@@ -349,13 +349,13 @@ jobs:
         echo "DATE1=$(date +"%y.%m.%d")" >> $GITHUB_ENV
 
     - name: Package OpenWrt Firmware
-      uses: unifreq/openwrt_packit@master
+      uses: ophub/amlogic-s9xxx-openwrt@main
       if: ${{ steps.download.outputs.status }} == 'success' && !cancelled()
-      env:
-        OPENWRT_ARMSR: https://github.com/yasuis/op/releases/download/ARMv8_MINI/openwrt-armsr-armv8-generic-rootfs.tar.gz
-        PACKAGE_SOC: all
-        WHOAMI: yasui
-        KERNEL_VERSION_NAME: 6.12.29
+      with:
+        openwrt_path: openwrt/bin/targets/*/*/*rootfs.tar.gz
+        openwrt_board: all
+        openwrt_kernel: 6.12.y
+        builder_name: yasui
         KERNEL_AUTO_LATEST: true
         DISTRIB_REVISION: R${{ env.DATE1 }} by yasui
 
