@@ -323,7 +323,7 @@ jobs:
       id: download
       working-directory: /workdir
       run: |
-        FIRMWARE_PATH=openwrt/bin/targets/armvirt/64
+        FIRMWARE_PATH=openwrt/bin/targets/armsr/armv8
         [ -d $FIRMWARE_PATH ] || mkdir -p $FIRMWARE_PATH
         cd $FIRMWARE_PATH
         wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
