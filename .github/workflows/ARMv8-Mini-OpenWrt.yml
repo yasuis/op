@@ -315,15 +315,12 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
-          sudo mkdir -p /workdir
-          sudo chown $USER:$GROUPS /workdir
           echo "status=success" >> ${GITHUB_OUTPUT}
           
     - name: Download armvirt Firmware
       id: download
-      working-directory: /workdir
       run: |
-        FIRMWARE_PATH=openwrt/bin/targets/armsr/armv8
+        FIRMWARE_PATH=workdir/openwrt/bin/targets/armsr/armv8
         [ -d $FIRMWARE_PATH ] || mkdir -p $FIRMWARE_PATH
         cd $FIRMWARE_PATH
         wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
@@ -334,7 +331,7 @@ jobs:
     - name: Package OpenWrt Firmware
       uses: ophub/amlogic-s9xxx-openwrt@main
       with:
-        openwrt_path: openwrt/bin/targets/*/*/*rootfs.tar.gz
+        openwrt_path: workdir/openwrt/bin/targets/*/*/*rootfs.tar.gz
         openwrt_board: e52c
         openwrt_kernel: 6.12.y
         builder_name: yasui
