@@ -331,7 +331,7 @@ jobs:
     - name: Package OpenWrt Firmware
       uses: ophub/amlogic-s9xxx-openwrt@main
       with:
-        openwrt_path: workdir/openwrt/bin/targets/*/*/*rootfs.tar.gz
+        openwrt_path: workdir/openwrt/bin/targets/armsr/armv8/openwrt-armsr-armv8-generic-rootfs.tar.gz
         openwrt_board: e52c
         openwrt_kernel: 6.12.y
         builder_name: yasui
