@@ -323,7 +323,7 @@ jobs:
         FIRMWARE_PATH=workdir/openwrt/bin/targets/armsr/armv8
         [ -d $FIRMWARE_PATH ] || mkdir -p $FIRMWARE_PATH
         cd $FIRMWARE_PATH
-        wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
+        # wget -q $(curl -s "https://api.github.com/repos/$GITHUB_REPOSITORY/releases" | grep "$FIRMWARE_TAG.*rootfs.tar.gz" | awk -F '"' '{print $4}')
         echo "status=success" >> $GITHUB_OUTPUT
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "DATE1=$(date +"%y.%m.%d")" >> $GITHUB_ENV
@@ -332,7 +332,7 @@ jobs:
       uses: unifreq/openwrt_packit@master
       if: ${{ steps.download.outputs.status }} == 'success' && !cancelled()
       env:
-        OPENWRT_ARMSR: workdir/openwrt/bin/targets/*/*/lede-24.10.2-armsr-armv8-generic-rootfs.tar.gz
+        OPENWRT_ARMSR: workdir/openwrt/bin/targets/*/*/openwrt-armsr-armv8-generic-rootfs.tar.gz
         PACKAGE_SOC: all
         WHOAMI: yasui
         KERNEL_VERSION_NAME: 6.12.y
