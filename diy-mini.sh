@@ -45,7 +45,7 @@ function git_sparse_clone() {
 # git clone --depth=1 https://github.com/esirplayground/luci-app-poweroff package/luci-app-poweroff
 git clone --depth=1 https://github.com/Jason6111/luci-app-netdata package/luci-app-netdata
 git_sparse_clone main https://github.com/Lienol/openwrt-package luci-app-filebrowser luci-app-ssr-mudb-server
-git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
 # 科学上网插件
 git clone -b main https://github.com/xiaorouji/openwrt-passwall package/psw
@@ -96,7 +96,7 @@ sed -i '$i uci commit nlbwmon' package/lean/default-settings/files/zzz-default-s
 chmod 755 package/luci-app-onliner/root/usr/share/onliner/setnlbw.sh
 
 # 友善uboot
-sed -i '/^UBOOT_TARGETS := rk3528-evb rk3588-evb/s/^/#/' package/boot/uboot-rk35xx/Makefile
+# sed -i '/^UBOOT_TARGETS := rk3528-evb rk3588-evb/s/^/#/' package/boot/uboot-rk35xx/Makefile
 
 # x86 型号只显示 CPU 型号
 sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/autocore
