@@ -335,7 +335,7 @@ jobs:
         OPENWRT_ARMSR: workdir/openwrt/bin/targets/*/*/lede-24.10.2-armsr-armv8-generic-rootfs.tar.gz
         PACKAGE_SOC: e52c_e54c
         WHOAMI: yasui
-        KERNEL_VERSION_NAME: 6.12.29
+        KERNEL_VERSION_NAME: 6.6.y
         KERNEL_AUTO_LATEST: true
         DISTRIB_REVISION: R${{ env.DATE1 }} by yasui
 
