@@ -27,6 +27,7 @@
 6. 集成应用过滤插件，支持游戏、视频、聊天、下载等 APP 过滤
 7. 集成在线用户插件，可查看所有在线用户 IP 地址与实时速率等
 8. ARMv8系列固件内置晶晨宝盒，支持在线更新固件及内核等
+
 目前bug是ARMv8系列无法登录web管理界面，需ssh连接后手动修改/etc/config/uhttpd文件，注释掉2行listen_https即可！！！
 
 ## 固件下载 [![](https://img.shields.io/badge/-编译状态及下载链接-FFFFFF.svg)](#固件下载-)
