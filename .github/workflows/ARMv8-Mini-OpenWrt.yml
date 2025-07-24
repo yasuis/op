@@ -371,6 +371,7 @@ jobs:
           - 用命令更新: 上传固件到 `/mnt/mmcblk2p4` 目录，输入命令 `openwrt-update-amlogic` 即可更新
           - 注意: 如非 `amlogic` 平台，请将其更改为对应平台 `rockchip` `allwinner`
           - 部分常见问题及注意事项请参考恩山论坛F大➦[最新帖](https://www.right.com.cn/forum/thread-4076037-1-1.html)
+          - 无法登录web管理界面需ssh连接后手动修改/etc/config/uhttpd文件，注释掉2行listen_https后service uhttpd restart
           ### 🧊 固件版本
           - 固件编译前最后一次➦[主源码](${{ env.REPO_URL }})更新记录
           - ${{ env.COMMIT_AUTHOR }}
