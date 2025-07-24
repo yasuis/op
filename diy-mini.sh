@@ -22,12 +22,10 @@ rm -rf feeds/luci/applications/luci-app-netdata
 rm -rf feeds/luci/applications/luci-app-serverchan
 rm -rf feeds/package/helloworld
 rm -rf feeds/packages/lang/golang
-rm -rf feeds/packages/net/v2ray-geodata
+rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-libev,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,xray-plugin,geoview,shadow-tls}
 rm -rf feeds/luci/applications/luci-app-passwall
-rm -rf feeds/packages/net/chinadns-ng
 # rm -rf feeds/packages/net/ddns-go
-rm -rf feeds/packages/net/xray-core
-rm -rf feeds/packages/net/sing-box
+
 
 # Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {
