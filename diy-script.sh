@@ -89,6 +89,7 @@ git clone --depth=1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
 # rm -rf feeds/luci/applications/luci-app-alist
 # git clone --depth=1 https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
 # git clone --depth=1 https://github.com/sbwml/luci-app-alist package/alist
+git clone --depth=1 https://github.com/sbwml/luci-app-openlist2 package/openlist
 
 # DDNS.to
 git_sparse_clone main https://github.com/linkease/nas-packages-luci luci/luci-app-ddnsto
