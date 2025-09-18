@@ -12,7 +12,7 @@
 - 项目使用 Github Actions 拉取 [Lean](https://github.com/coolsnowwolf/lede) 的 Openwrt 源码仓库进行云编译
 - 项目大部分代码拉取自 [haiibo](https://github.com/haiibo/OpenWrt) 的 Openwrt 云编译项目
 - 固件默认管理地址：`192.168.100.1` 默认用户：`root` 默认密码：`password`
-- 提供适配于 ARMv8 电视盒子、Rockchip 平台、树莓派4以及 X86 平台设备的 OpenWrt 固件
+- 提供适配于 ARMv8 电视盒子、Rockchip 平台、树莓派4、斐讯N1以及 X86 平台设备的 OpenWrt 固件
 - ARMv8 盒子固件为 [Mini版](https://github.com/yasuis/op/releases/tag/ARMv8_MINI) ，以科学上网为主，包含 [F大](https://github.com/unifreq/openwrt_packit) 发布的所有已适配的盒子固件
 - 固件集成的所有 ipk 插件全部打包在 Packages 文件中，可以在 [Releases](https://github.com/yasuis/op/releases) 内进行下载
 - 项目编译的固件插件为最新版本，最新版插件可能有 BUG，如果之前使用稳定则无需追新
@@ -32,7 +32,9 @@
 
 	#list listen_https '0.0.0.0:443'
 	#list listen_https '[::]:443'
-保存后ssh输入service uhttpd restart
+保存后ssh输入
+
+    service uhttpd restart
 
 ## 固件下载 [![](https://img.shields.io/badge/-编译状态及下载链接-FFFFFF.svg)](#固件下载-)
 点击下表中 [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?style=flat&logo=hack-the-box)](https://github.com/yasuis/op/releases) 即可跳转到该设备固件下载页面
