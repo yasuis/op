@@ -4,7 +4,6 @@ src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main
 #src-git helloworld https://github.com/fw876/helloworld;master
 
 src-git packages https://github.com/coolsnowwolf/packages.git;master
-#src-git luci https://github.com/coolsnowwolf/luci.git;master
-src-git luci https://github.com/coolsnowwolf/luci.git;openwrt-24.10
+src-git luci https://github.com/coolsnowwolf/luci.git;master
 src-git routing https://github.com/coolsnowwolf/routing
 src-git telephony https://github.com/coolsnowwolf/telephony.git
