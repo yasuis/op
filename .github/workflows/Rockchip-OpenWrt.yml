@@ -59,6 +59,7 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           sudo -E apt install clang
+          sudo -E apt install scdoc
 
     - name: Combine Disks
       uses: easimon/maximize-build-space@master
