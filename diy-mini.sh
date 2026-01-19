@@ -46,8 +46,8 @@ git_sparse_clone main https://github.com/Lienol/openwrt-package luci-app-filebro
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
 # 科学上网插件
-git clone -b main https://github.com/xiaorouji/openwrt-passwall package/psw
-git clone https://github.com/xiaorouji/openwrt-passwall-packages package/pswcore
+git clone -b main https://github.com/Openwrt-Passwall/openwrt-passwall package/psw
+git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/pswcore
 git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
 # git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
 # git clone --depth=1 https://github.com/fw876/helloworld.git package/luci-app-ssr-plus
