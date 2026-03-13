@@ -154,3 +154,5 @@ find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+./scripts/feeds update luci
+./scripts/feeds install -a -p luci
