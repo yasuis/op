@@ -296,7 +296,7 @@ jobs:
 
     - name: Package OpenWrt Firmware
       uses: unifreq/openwrt_packit@master
-      if: ${{ steps.download.outputs.status }} == 'success' && !cancelled()
+      if: ${{ steps.download.outputs.status  == 'success' && !cancelled()}}
       env:
         OPENWRT_ARMSR: https://github.com/yasuis/op/releases/download/ROOTFS_MINI/openwrt-armsr-armv8-generic-rootfs.tar.gz
         KERNEL_REPO_URL: ophub/kernel
