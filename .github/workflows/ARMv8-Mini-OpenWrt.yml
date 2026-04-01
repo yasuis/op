@@ -93,7 +93,6 @@ jobs:
           sudo -E apt-get -y update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
           sudo -E apt-get -y install $(curl -fsSL https://ophub.org/ubuntu2404-make-openwrt-depends)
-          sudo -E apt-get -y install libfuse-dev
           sudo -E systemctl daemon-reload
           #sudo -E apt-get -y full-upgrade
           sudo -E apt-get -y autoremove --purge
@@ -101,8 +100,7 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
-          sudo -E apt install clang
-          sudo -E apt install scdoc
+          # sudo -E apt install scdoc
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
 
