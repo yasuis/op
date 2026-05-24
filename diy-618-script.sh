@@ -65,29 +65,7 @@ git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git packa
 # git clone --depth=1 https://github.com/sbwml/luci-app-argon-config.git package/luci-app-argon-config
 
 # 更改 Argon 主题背景
-ARGON_BG_DIR=$(find feeds/ package/ -path "*/luci-theme-argon/htdocs/luci-static/argon/img" 2>/dev/null | head -n 1)
-
-if [ -n "$ARGON_BG_DIR" ] && [ -f "$GITHUB_WORKSPACE/images/bg1.jpg" ]; then
-    echo "Found Argon background directory: $ARGON_BG_DIR"
-    
-    cp -f "$GITHUB_WORKSPACE/images/bg1.jpg" "$ARGON_BG_DIR/bg1.jpg"
-    echo "Successfully replaced default bg1.jpg with custom wallpaper."
-else
-    echo "Warning: Cannot find Argon background directory or custom wallpaper at $GITHUB_WORKSPACE/images/bg1.jpg"
-fi
-
-ARGON_CONFIG_FILE=$(find feeds/ package/ -path "*/luci-app-argon-config/root/etc/config/argon" 2>/dev/null | head -n 1)
-
-if [ -n "$ARGON_CONFIG_FILE" ]; then
-    echo "Found Argon config at: $ARGON_CONFIG_FILE, patching to built-in mode..."
-    
-    sed -i "s/option bing_wallpaper '1'/option bing_wallpaper '0'/g" "$ARGON_CONFIG_FILE"
-    sed -i "s/option wallpaper_mode '1'/option wallpaper_mode '0'/g" "$ARGON_CONFIG_FILE"
-    sed -i "s/option wallpaper_mode 'bing'/option wallpaper_mode 'default'/g" "$ARGON_CONFIG_FILE"
-else
-    echo "Warning: luci-app-argon-config config file not found!"
-fi
-
+cp -f $GITHUB_WORKSPACE/images/bg1.jpg package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 
 # 晶晨宝盒
 rm -rf package/luci-app-amlogic
@@ -100,7 +78,7 @@ sed -i "s|ARMv8|ARMv8_lean|g" package/luci-app-amlogic/root/etc/config/amlogic
 
 # SmartDNS
 git clone --depth=1 -b master https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
-git clone --depth=1 https://github.com/pymumu/openwrt-smartdns package/smartdns
+git clone --depth=1 -b master https://github.com/pymumu/smartdns package/smartdns
 
 # msd_lite
 git clone --depth=1 https://github.com/ximiTech/luci-app-msd_lite package/luci-app-msd_lite
