@@ -78,7 +78,7 @@ sed -i "s|ARMv8|ARMv8_lean|g" package/luci-app-amlogic/root/etc/config/amlogic
 
 # SmartDNS
 git clone --depth=1 -b master https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
-git clone --depth=1 -b master https://github.com/pymumu/smartdns package/smartdns
+git clone --depth=1 https://github.com/pymumu/smartdns package/smartdns
 
 # msd_lite
 git clone --depth=1 https://github.com/ximiTech/luci-app-msd_lite package/luci-app-msd_lite
