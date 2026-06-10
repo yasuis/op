@@ -58,6 +58,8 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           # sudo -E apt install scdoc
+          sudo -E apt-get install -y npm
+          sudo -E npm install -g pnpm
 
     - name: Combine Disks
       uses: easimon/maximize-build-space@master
