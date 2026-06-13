@@ -101,6 +101,8 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           # sudo -E apt install scdoc
+          sudo -E apt-get install -y dwarves npm
+          sudo -E npm install -g pnpm
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
 
