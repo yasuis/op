@@ -180,7 +180,7 @@ jobs:
 
     - name: Upload Firmware To Release
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE == 'true'
-      uses: ncipollo/release-action@v4
+      uses: ncipollo/release-action@v1
       with:
         name: R${{ env.DATE }} for ${{ env.FIRMWARE_TAG }}
         allowUpdates: true
