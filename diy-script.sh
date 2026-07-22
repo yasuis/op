@@ -158,12 +158,6 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 # sed -i '/exit 0/i echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' /etc/rc.local
 sed -i '/exit 0/i echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
 
-# 强行剔除报错的内核显示模块，不改动 modules.mk 源码
-sed -i '/CONFIG_PACKAGE_kmod-drm/d' .config
-sed -i '/CONFIG_PACKAGE_kmod-fb/d' .config
-echo "CONFIG_PACKAGE_kmod-drm-rockchip=n" >> .config
-echo "CONFIG_PACKAGE_kmod-drm-kms-helper=n" >> .config
-
 # 移除旧版损坏的 xtables-addons
 rm -rf feeds/packages/net/xtables-addons
 rm -rf package/feeds/packages/xtables-addons
