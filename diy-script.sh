@@ -71,15 +71,6 @@ git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git packa
 # 更改 Argon 主题背景
 cp -f $GITHUB_WORKSPACE/images/bg1.jpg package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 
-# 晶晨宝盒
-rm -rf package/luci-app-amlogic
-git clone https://github.com/ophub/luci-app-amlogic.git package/luci-app-amlogic
-sed -i "s|firmware_repo.*|firmware_repo 'https://github.com/yasuis/op'|g" package/luci-app-amlogic/root/etc/config/amlogic
-sed -i '/cat >>.\/etc\/crontabs\/root/,/EOF/d' package/luci-app-amlogic/root/usr/sbin/openwrt-update-amlogic
-sed -i '/cat >>.\/etc\/crontabs\/root/,/EOF/d' package/luci-app-amlogic/root/usr/sbin/openwrt-update-kvm
-# sed -i "s|kernel_path.*|kernel_path 'https://github.com/ophub/kernel'|g" package/luci-app-amlogic/root/etc/config/amlogic
-sed -i "s|ARMv8|ARMv8_lean|g" package/luci-app-amlogic/root/etc/config/amlogic
-
 # SmartDNS
 git clone --depth=1 -b master https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
 git clone --depth=1 https://github.com/pymumu/openwrt-smartdns package/smartdns
