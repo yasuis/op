@@ -136,6 +136,12 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
+    - name: Patch dockerd build script
+      run: |
+         cd $GITHUB_WORKSPACE/openwrt
+         find feeds/packages/utils/dockerd/ -type f -name "Makefile" -exec sed -i 's/cp /cp -f /g' {} +
+         sed -i 's/cp "$file"/\[ -n "$file" -a -f "$file" \] \&\& cp "$file"/g' $(find build_dir/ -name binary-daemon 2>/dev/null || true)
+
     - name: Compile Firmware
       id: compile
       run: |
