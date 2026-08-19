@@ -138,18 +138,23 @@ jobs:
 
     - name: Fix dockerd binary-daemon cp error
       run: |
-        cd $OPENWRT_PATH
-        # 先让 OpenWrt 解压并准备好 dockerd 源码目录
-        make package/feeds/packages/dockerd/prepare V=s || true
-
-        # 动态扫描 build_dir 下解压出来的 binary-daemon 脚本并修复空变量 cp 问题
-        find build_dir/ -name "binary-daemon" -type f | while read -r file; do
-          echo "Patching $file..."
-          sed -i 's/cp "$file"/\[ -n "$file" -a -f "$file" \] \&\& cp "$file"/g' "$file"
-          sed -i 's/cp $file/\[ -n "$file" -a -f "$file" \] \&\& cp $file/g' "$file"
-        done
-
-        find feeds/packages/utils/dockerd/ -name "Makefile" -type f -exec sed -i 's/cp /cp -f /g' {} +
+        cd $OPENWRT_PATH/feeds/packages/utils/dockerd
+        mkdir -p patches
+        
+        # 写入官方 patch 规范，锁定解决 cp 空变量问题
+        cat << 'EOF' > patches/999-fix-empty-cp.patch
+        --- a/hack/make/binary-daemon
+        +++ b/hack/make/binary-daemon
+        @@ -16,7 +16,7 @@
+               echo "Copying nested executables into $(target_dir)"
+               for file in "${nested_executables[@]}"; do
+               if [ -n "$file" ]; then
+        -			cp "$file" "$(target_dir)/"
+        +			[ -f "$file" ] && cp "$file" "$(target_dir)/" || true
+               fi
+               done
+             fi
+        EOF
         
     - name: Compile Firmware
       id: compile
