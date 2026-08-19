@@ -115,6 +115,16 @@ jobs:
         ./scripts/feeds clean
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        
+    - name: Fix dockerd build failure by rollback
+      run: |
+        cd $OPENWRT_PATH/feeds/packages
+        # 查找 dockerd 升级到 29.x 之前的稳定 commit 并回退 utils/dockerd
+        DOCKERD_COMMIT=$(git log --oneline utils/dockerd | grep -v "29\." | head -n 1 | awk '{print $1}')
+        if [ -n "$DOCKERD_COMMIT" ]; then
+          echo "Rolling back dockerd package to commit $DOCKERD_COMMIT..."
+          git checkout $DOCKERD_COMMIT -- utils/dockerd
+        fi
 
     - name: Load Custom Configuration
       run: |
@@ -135,12 +145,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: Patch dockerd build script
-      run: |
-         cd $GITHUB_WORKSPACE/openwrt
-         find feeds/packages/utils/dockerd/ -type f -name "Makefile" -exec sed -i 's/cp /cp -f /g' {} +
-         sed -i 's/cp "$file"/\[ -n "$file" -a -f "$file" \] \&\& cp "$file"/g' $(find build_dir/ -name binary-daemon 2>/dev/null || true)
 
     - name: Compile Firmware
       id: compile
