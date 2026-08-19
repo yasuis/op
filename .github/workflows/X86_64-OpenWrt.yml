@@ -116,16 +116,6 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
-    - name: Fix dockerd build failure by rollback
-      run: |
-        cd $OPENWRT_PATH/feeds/packages
-        # 查找 dockerd 升级到 29.x 之前的稳定 commit 并回退 utils/dockerd
-        DOCKERD_COMMIT=$(git log --oneline utils/dockerd | grep -v "29\." | head -n 1 | awk '{print $1}')
-        if [ -n "$DOCKERD_COMMIT" ]; then
-          echo "Rolling back dockerd package to commit $DOCKERD_COMMIT..."
-          git checkout $DOCKERD_COMMIT -- utils/dockerd
-        fi
-
     - name: Load Custom Configuration
       run: |
         [ -e files ] && mv files $OPENWRT_PATH/files
@@ -146,6 +136,21 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
+    - name: Fix dockerd binary-daemon cp error
+      run: |
+        cd $OPENWRT_PATH
+        # 先让 OpenWrt 解压并准备好 dockerd 源码目录
+        make package/feeds/packages/dockerd/prepare V=s || true
+
+        # 动态扫描 build_dir 下解压出来的 binary-daemon 脚本并修复空变量 cp 问题
+        find build_dir/ -name "binary-daemon" -type f | while read -r file; do
+          echo "Patching $file..."
+          sed -i 's/cp "$file"/\[ -n "$file" -a -f "$file" \] \&\& cp "$file"/g' "$file"
+          sed -i 's/cp $file/\[ -n "$file" -a -f "$file" \] \&\& cp $file/g' "$file"
+        done
+
+        find feeds/packages/utils/dockerd/ -name "Makefile" -type f -exec sed -i 's/cp /cp -f /g' {} +
+        
     - name: Compile Firmware
       id: compile
       run: |
