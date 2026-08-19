@@ -115,6 +115,19 @@ jobs:
         ./scripts/feeds clean
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+
+    - name: Apply Custom dockerd Patch
+      run: |
+        # 创建 dockerd 软件包的补丁存放目录
+        mkdir -p $OPENWRT_PATH/feeds/packages/utils/dockerd/patches
+        
+        # 复制你的自定义补丁到该目录下，OpenWrt 编译时会自动打入该补丁
+        if [ -f "$GITHUB_WORKSPACE/scripts/dockerd.patch" ]; then
+          cp $GITHUB_WORKSPACE/scripts/dockerd.patch $OPENWRT_PATH/feeds/packages/utils/dockerd/patches/999-custom-dockerd-fix.patch
+          echo "补丁应用成功：已复制 dockerd.patch 到目标目录"
+        else
+          echo "警告：未找到 $GITHUB_WORKSPACE/scripts/dockerd.patch 文件！"
+        fi
         
     - name: Load Custom Configuration
       run: |
@@ -135,26 +148,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: Fix dockerd binary-daemon cp error
-      run: |
-        cd $OPENWRT_PATH/feeds/packages/utils/dockerd
-        mkdir -p patches
-        
-        # 写入官方 patch 规范，锁定解决 cp 空变量问题
-        cat << 'EOF' > patches/999-fix-empty-cp.patch
-        --- a/hack/make/binary-daemon
-        +++ b/hack/make/binary-daemon
-        @@ -16,7 +16,7 @@
-               echo "Copying nested executables into $(target_dir)"
-               for file in "${nested_executables[@]}"; do
-               if [ -n "$file" ]; then
-        -			cp "$file" "$(target_dir)/"
-        +			[ -f "$file" ] && cp "$file" "$(target_dir)/" || true
-               fi
-               done
-             fi
-        EOF
         
     - name: Compile Firmware
       id: compile
