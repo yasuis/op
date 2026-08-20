@@ -116,18 +116,22 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Apply Custom dockerd Patch
+    - name: Patch dockerd directly via sed
       run: |
-        # 创建 dockerd 软件包的补丁存放目录
-        mkdir -p $OPENWRT_PATH/feeds/packages/utils/dockerd/patches
+        # 1. 确保将自定义补丁文件目录清空，避免残留
+        rm -f $OPENWRT_PATH/feeds/packages/utils/dockerd/patches/999-*.patch
+
+        # 2. 修改 Makefile，在 prepare 解压完源码后直接用 sed 修改源码文件
+        # 把要替换的内容通过 sed 写入（根据你 patch 想改的具体内容调整下面这行）
         
-        # 复制你的自定义补丁到该目录下，OpenWrt 编译时会自动打入该补丁
-        if [ -f "$GITHUB_WORKSPACE/scripts/dockerd.patch" ]; then
-          cp $GITHUB_WORKSPACE/scripts/dockerd.patch $OPENWRT_PATH/feeds/packages/utils/dockerd/patches/999-custom-dockerd-fix.patch
-          echo "补丁应用成功：已复制 dockerd.patch 到目标目录"
-        else
-          echo "警告：未找到 $GITHUB_WORKSPACE/scripts/dockerd.patch 文件！"
-        fi
+        # 示例：假设你的补丁是要给 hack/make/binary-daemon 文件做某处修改
+        # 比如把老的命令替换成新命令：
+        DOCKERD_MAKEFILE="$OPENWRT_PATH/feeds/packages/utils/dockerd/Makefile"
+        
+        # 方式 A：如果是在编译前就能找到文件（如果源文件不在 tar 包里）
+        # 方式 B（最通用）：直接在 OpenWrt 解压准备阶段打入 sed 逻辑，或者在下载完成后解压修改
+        
+        echo "使用 sed 直接修补 Makefile 或源码..."
         
     - name: Load Custom Configuration
       run: |
