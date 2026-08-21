@@ -116,18 +116,17 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
-    - name: Apply Custom dockerd Patch
+    - name: Patch dockerd via sed
       run: |
-        TARGET_PATCH_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd/patches"
-        mkdir -p $TARGET_PATCH_DIR
+        DOCKERD_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd"
         
-        # 复制你更新后的补丁文件
-        if [ -f "$GITHUB_WORKSPACE/scripts/dockerd.patch" ]; then
-          cp $GITHUB_WORKSPACE/scripts/dockerd.patch $TARGET_PATCH_DIR/999-fix-empty-cp.patch
-          echo "补丁已成功更新并写入：999-fix-empty-cp.patch"
-        else
-          echo "错误：未找到 $GITHUB_WORKSPACE/scripts/dockerd.patch 文件！"
-          exit 1
+        # 1. 彻底清空 patches 目录下会导致 Hunk FAILED 的自定义补丁
+        rm -f $DOCKERD_DIR/patches/999-*.patch
+        
+        # 2. 修改 Makefile，注入 sed 命令：在准备完源码后把 cp -N "$file_path" 改为带非空校验的形式
+        if [ -f "$DOCKERD_DIR/Makefile" ]; then
+          sed -i '/Build\/Prepare/a \tsed -i '\''s/cp -N "$file_path"/\[ -n "$file_path" \] \&\& cp -N "$file_path"/g'\'' $(PKG_BUILD_DIR)/hack/make/binary-daemon' $DOCKERD_DIR/Makefile
+          echo "Successfully injected sed patch into dockerd Makefile."
         fi
         
     - name: Load Custom Configuration
