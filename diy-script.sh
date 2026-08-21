@@ -158,6 +158,12 @@ git clone https://github.com/openwrt/packages.git /tmp/owrt-pkgs
 mv /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/xtables-addons
 rm -rf /tmp/owrt-pkgs
 
+# 强制使用系统独立的 containerd 和 runc，避免 dockerd 内部复制报错
+echo "CONFIG_PACKAGE_dockerd=y" >> .config
+echo "CONFIG_DOCKER_STO_EXT4=y" >> .config
+echo "CONFIG_PACKAGE_containerd=y" >> .config
+echo "CONFIG_PACKAGE_runc=y" >> .config
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
