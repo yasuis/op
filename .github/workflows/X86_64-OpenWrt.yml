@@ -116,21 +116,22 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
-    - name: Apply Community dockerd Patch
+    - name: Fix dockerd Build Script
       run: |
-        PATCH_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd/patches"
-        mkdir -p $PATCH_DIR
-        rm -f $PATCH_DIR/999-*.patch
+        DOCKERD_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd"
         
-        wget -O $PATCH_DIR/001-skip-copy-nested-binaries.patch \
-          https://raw.githubusercontent.com/yasuis/op/refs/heads/main/scripts/dockerd.patch
+        # 1. 清理掉所有可能引起冲突的自定义补丁
+        rm -f $DOCKERD_DIR/patches/*skip-copy*.patch
+        rm -f $DOCKERD_DIR/patches/999-*.patch
         
-        if [ -f "$PATCH_DIR/001-skip-copy-nested-binaries.patch" ]; then
-          echo "补丁下载完成并放置成功！"
-        else
-          echo "补丁下载失败！"
-          exit 1
+        # 2. 如果 Makefile 里有 cp 嵌套二进制文件的逻辑，直接用 sed 禁用或跳过
+        if [ -f "$DOCKERD_DIR/Makefile" ]; then
+          # 将可能报错的 cp 命令替换为 echo 提示，避免空路径 cp 报错
+          sed -i 's/cp -fpR $(PKG_BUILD_DIR)\/.*CONTAINERD.*/# skip containerd copy/g' $DOCKERD_DIR/Makefile || true
+          sed -i 's/cp -fpR $(PKG_BUILD_DIR)\/.*RUNC.*/# skip runc copy/g' $DOCKERD_DIR/Makefile || true
         fi
+        
+        echo "dockerd 编译脚本修正完成！"
         
     - name: Load Custom Configuration
       run: |
