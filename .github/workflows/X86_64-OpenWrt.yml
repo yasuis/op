@@ -123,7 +123,7 @@ jobs:
         rm -f $PATCH_DIR/999-*.patch
         
         wget -O $PATCH_DIR/001-skip-copy-nested-binaries.patch \
-          https://raw.githubusercontent.com/AndyChiang888/packages/refs/heads/dockerd/utils/dockerd/patches/001-skip-copy-nested-binaries.patch
+          https://raw.githubusercontent.com/yasuis/op/refs/heads/main/scripts/dockerd.patch
         
         if [ -f "$PATCH_DIR/001-skip-copy-nested-binaries.patch" ]; then
           echo "补丁下载完成并放置成功！"
