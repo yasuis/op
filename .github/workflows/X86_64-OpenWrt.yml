@@ -116,17 +116,20 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
-    - name: Patch dockerd via sed
+    - name: Apply Community dockerd Patch
       run: |
-        DOCKERD_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd"
+        PATCH_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd/patches"
+        mkdir -p $PATCH_DIR
+        rm -f $PATCH_DIR/999-*.patch
         
-        # 1. 彻底清空 patches 目录下会导致 Hunk FAILED 的自定义补丁
-        rm -f $DOCKERD_DIR/patches/999-*.patch
+        wget -O $PATCH_DIR/001-skip-copy-nested-binaries.patch \
+          https://raw.githubusercontent.com/AndyChiang888/packages/refs/heads/dockerd/utils/dockerd/patches/001-skip-copy-nested-binaries.patch
         
-        # 2. 修改 Makefile，注入 sed 命令：在准备完源码后把 cp -N "$file_path" 改为带非空校验的形式
-        if [ -f "$DOCKERD_DIR/Makefile" ]; then
-          sed -i '/Build\/Prepare/a \tsed -i '\''s/cp -N "$file_path"/\[ -n "$file_path" \] \&\& cp -N "$file_path"/g'\'' $(PKG_BUILD_DIR)/hack/make/binary-daemon' $DOCKERD_DIR/Makefile
-          echo "Successfully injected sed patch into dockerd Makefile."
+        if [ -f "$PATCH_DIR/001-skip-copy-nested-binaries.patch" ]; then
+          echo "补丁下载完成并放置成功！"
+        else
+          echo "补丁下载失败！"
+          exit 1
         fi
         
     - name: Load Custom Configuration
