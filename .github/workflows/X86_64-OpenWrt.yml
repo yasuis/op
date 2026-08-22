@@ -116,22 +116,33 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         
-    - name: Fix dockerd Build Script
+    - name: Fix dockerd 29.1.1 Copy Error
       run: |
         DOCKERD_DIR="$OPENWRT_PATH/feeds/packages/utils/dockerd"
         
-        # 1. 清理掉所有可能引起冲突的自定义补丁
+        # 1. 清理可能存在冲突的旧 Patch
         rm -f $DOCKERD_DIR/patches/*skip-copy*.patch
         rm -f $DOCKERD_DIR/patches/999-*.patch
         
-        # 2. 如果 Makefile 里有 cp 嵌套二进制文件的逻辑，直接用 sed 禁用或跳过
-        if [ -f "$DOCKERD_DIR/Makefile" ]; then
-          # 将可能报错的 cp 命令替换为 echo 提示，避免空路径 cp 报错
-          sed -i 's/cp -fpR $(PKG_BUILD_DIR)\/.*CONTAINERD.*/# skip containerd copy/g' $DOCKERD_DIR/Makefile || true
-          sed -i 's/cp -fpR $(PKG_BUILD_DIR)\/.*RUNC.*/# skip runc copy/g' $DOCKERD_DIR/Makefile || true
-        fi
-        
-        echo "dockerd 编译脚本修正完成！"
+        # 2. 为 dockerd 29.1.1 动态创建一个干净的 Patch
+        # 作用：跳过 hack/make/binary-daemon 里 cp 空变量的操作
+        cat << 'EOF' > $DOCKERD_DIR/patches/001-fix-binary-daemon-cp.patch
+        --- a/hack/make/binary-daemon
+        +++ b/hack/make/binary-daemon
+        @@ -10,7 +10,7 @@
+        )
+ 
+        echo "Copying nested executables into $(funct_url_dirname "${DEST}")"
+        -	copy_containerd "${DEST}"
+        -	copy_runc "${DEST}"
+        -	copy_rootlesskit "${DEST}"
+        +	# copy_containerd "${DEST}"
+        +	# copy_runc "${DEST}"
+        +	# copy_rootlesskit "${DEST}"
+        )
+        EOF
+
+        echo "dockerd 29.1.1 修复 Patch 创建成功！"
         
     - name: Load Custom Configuration
       run: |
