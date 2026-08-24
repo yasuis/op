@@ -115,41 +115,6 @@ jobs:
         ./scripts/feeds clean
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-
-    - name: Patch dockerd 29.x Build Script
-      run: |
-        DOCKERD_MAKEFILE="$OPENWRT_PATH/feeds/packages/utils/dockerd/Makefile"
-        
-        # 1. 确保目录存在并清理可能冲突的旧 patch
-        mkdir -p $OPENWRT_PATH/feeds/packages/utils/dockerd/patches
-        rm -f $OPENWRT_PATH/feeds/packages/utils/dockerd/patches/*skip-copy*.patch
-        rm -f $OPENWRT_PATH/feeds/packages/utils/dockerd/patches/001-*.patch
-
-        # 2. 如果 Makefile 存在，直接用 sed 把 DOCKER_BUILDTAGS 或构建逻辑修补掉
-        # 方法：在 Makefile 解压后，强行给 hack/make/binary-daemon 里的 copy 行加注释/替换
-        if [ -f "$DOCKERD_MAKEFILE" ]; then
-          # 技巧：在 Build/Compile 阶段执行前，先用 sed 替换 hack/make/binary-daemon 文件的内容
-          sed -i '/copy_containerd/d' $OPENWRT_PATH/feeds/packages/utils/dockerd/Makefile || true
-          sed -i '/copy_runc/d' $OPENWRT_PATH/feeds/packages/utils/dockerd/Makefile || true
-        fi
-
-        # 3. 创建适配 29.x 的 Patch
-        cat << 'EOF' > $OPENWRT_PATH/feeds/packages/utils/dockerd/patches/001-skip-copy-nested-binaries.patch
-        --- a/hack/make/binary-daemon
-        +++ b/hack/make/binary-daemon
-        @@ -10,7 +10,7 @@
-        )
- 
-        echo "Copying nested executables into $(funct_url_dirname "${DEST}")"
-        -	copy_containerd "${DEST}"
-        -	copy_runc "${DEST}"
-        -	copy_rootlesskit "${DEST}"
-        +	# copy_containerd "${DEST}"
-        +	# copy_runc "${DEST}"
-        +	# copy_rootlesskit "${DEST}"
-        ) 
-        EOF
-        echo "dockerd 29.6.1 补丁生成完毕！"
         
     - name: Load Custom Configuration
       run: |
