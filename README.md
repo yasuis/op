@@ -55,7 +55,7 @@
 | [Ophub](https://github.com/ophub) | [SuLingGG](https://github.com/SuLingGG) | [QiuSimons](https://github.com/QiuSimons) | [IvanSolis1989](https://github.com/IvanSolis1989) |
 | <img width="100" src="https://avatars.githubusercontent.com/u/68696949"/> | <img width="100" src="https://avatars.githubusercontent.com/u/22287562"/> | <img width="100" src="https://avatars.githubusercontent.com/u/45143996"/> | <img width="100" src="https://avatars.githubusercontent.com/u/44228691"/> |
 | [haiibo](https://github.com/haiibo/OpenWrt) |[sbwml](https://github.com/sbwml) |
-| <img width="100" src="https://avatars.githubusercontent.com/u/85640068"/> | <img width="100" src="[https://avatars.githubusercontent.com/u/22287562"/> |
+| <img width="100" src="https://avatars.githubusercontent.com/u/85640068"/> | <img width="100" src="https://avatars.githubusercontent.com/u/16485166?v=4"/> |
 
 <a href="#readme">
 <img src="https://img.shields.io/badge/-返回顶部-FFFFFF.svg" title="返回顶部" align="right"/>
