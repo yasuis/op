@@ -158,6 +158,10 @@ git clone https://github.com/openwrt/packages.git /tmp/owrt-pkgs
 mv /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/xtables-addons
 rm -rf /tmp/owrt-pkgs
 
+# 彻底解决 dockerd 编译报错：使用 sbwml 维护的 dockerd 优化包替换官方 feeds 中的源码
+rm -rf feeds/packages/utils/dockerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd feeds/packages/utils/dockerd
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-
+./scripts/feeds install -a -p packages
