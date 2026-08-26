@@ -158,13 +158,15 @@ git clone https://github.com/openwrt/packages.git /tmp/owrt-pkgs
 mv /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/xtables-addons
 rm -rf /tmp/owrt-pkgs
 
-# 1. 彻底清空官方 feeds 中旧版 Docker 组件
+# 彻底清空官方 feeds 中旧版 Docker 组件
 rm -rf feeds/packages/utils/dockerd
+rm -rf feeds/packages/utils/docker
 rm -rf feeds/packages/utils/containerd
 rm -rf feeds/packages/utils/runc
 
-# 2. 克隆 sbwml 匹配好的全新 Docker 组件全家桶
+# 克隆 sbwml 全套 Docker 组件（确保版本统一）
 git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd feeds/packages/utils/dockerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_docker feeds/packages/utils/docker
 git clone --depth=1 https://github.com/sbwml/packages_utils_containerd feeds/packages/utils/containerd
 git clone --depth=1 https://github.com/sbwml/packages_utils_runc feeds/packages/utils/runc
 
