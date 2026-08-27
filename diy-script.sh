@@ -146,8 +146,7 @@ find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # 测试开启bbr3
-# sed -i '/exit 0/i echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' /etc/rc.local
-sed -i '/exit 0/i echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
+sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
 
 # 移除旧版损坏的 xtables-addons
 rm -rf feeds/packages/net/xtables-addons
@@ -159,6 +158,7 @@ mv /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/xtables-addons
 rm -rf /tmp/owrt-pkgs
 
 # docker网页管理面板 dockerman
+git clone --depth=1 https://github.com/lisaac/luci-lib-docker package/luci-lib-docker
 git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
 
 ./scripts/feeds update -a
