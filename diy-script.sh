@@ -163,3 +163,9 @@ git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-ap
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+
+# 修复lean feeds内置dockerd编译cp报错，放在feeds命令之后！
+DOCKERD_FEED_MK="feeds/packages/utils/dockerd/Makefile"
+if [ -f "$DOCKERD_FEED_MK" ];then
+  sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon; sed -i "s/require_git_commit/#require_git_commit/g" hack/make.sh; ./hack/make.sh binary|g' "$DOCKERD_FEED_MK"
+fi
