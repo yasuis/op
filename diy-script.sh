@@ -164,16 +164,16 @@ rm -rf /tmp/owrt-pkgs
 
 # 克隆 sbwml 全套 Docker 组件（确保版本统一）
 rm -rf feeds/packages/utils/dockerd feeds/packages/utils/docker feeds/packages/utils/containerd feeds/packages/utils/runc
-git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd feeds/packages/utils/dockerd
-git clone --depth=1 https://github.com/sbwml/packages_utils_docker feeds/packages/utils/docker
-git clone --depth=1 https://github.com/sbwml/packages_utils_containerd feeds/packages/utils/containerd
-git clone --depth=1 https://github.com/sbwml/packages_utils_runc feeds/packages/utils/runc
+git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd package/dockerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_docker package/docker
+git clone --depth=1 https://github.com/sbwml/packages_utils_containerd package/containerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_runc package/runc
 
-# 2. 彻底抹去 sbwml/dockerd Makefile 里引发 cp 报错和版本校验的代码
-DOCKERD_MK="feeds/packages/utils/dockerd/Makefile"
+DOCKERD_MK="package/dockerd/Makefile"
 if [ -f "$DOCKERD_MK" ]; then
-    # 直接在 Makefile 里把 hack/make.sh 前面加上 sed 强制注销 copy 行
-    sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon \&\& ./hack/make.sh binary|g' $DOCKERD_MK
+    # 修复copy_拷贝报错
+    sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon \&\& ./hack/make.sh binary|g' "$DOCKERD_MK"
+    cat "$DOCKERD_MK" | grep hack/make.sh
 fi
 
 ./scripts/feeds update -a
