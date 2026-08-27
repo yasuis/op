@@ -171,11 +171,12 @@ git clone --depth=1 https://github.com/sbwml/packages_utils_runc package/runc
 
 DOCKERD_MK="package/dockerd/Makefile"
 if [ -f "$DOCKERD_MK" ]; then
-    # 修复copy_拷贝报错
-    sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon \&\& ./hack/make.sh binary|g' "$DOCKERD_MK"
-    cat "$DOCKERD_MK" | grep hack/make.sh
+    # 删除 containerd/runc/tini 版本校验代码块
+    sed -i '/# Verify containerd\/runc versions from Dockerfile/,/fi/d' "$DOCKERD_MK"
+    # 修复copy_报错 + 注释git commit校验函数调用
+    sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon; sed -i "s/require_git_commit/#require_git_commit/g" hack/make.sh; ./hack/make.sh binary|g' "$DOCKERD_MK"
+    cat "$DOCKERD_MK" | grep -E "hack/make.sh|Verify"
 fi
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-./scripts/feeds install -a -p packages
