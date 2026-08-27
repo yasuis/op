@@ -171,11 +171,17 @@ git clone --depth=1 https://github.com/sbwml/packages_utils_runc package/runc
 
 DOCKERD_MK="package/dockerd/Makefile"
 if [ -f "$DOCKERD_MK" ]; then
-    # 删除 containerd/runc/tini 版本校验代码块
-    sed -i '/# Verify containerd\/runc versions from Dockerfile/,/fi/d' "$DOCKERD_MK"
-    # 修复copy_报错 + 注释git commit校验函数调用
+    # 核心修复：直接清空 PREPARE_TARGET，彻底干掉所有版本校验脚本，不再执行grep tini/runc/containerd
+    sed -i 's/^PREPARE_TARGET:=.*/PREPARE_TARGET:=/' "$DOCKERD_MK"
+
+    # 修复 copy_ 报错 + 注释git commit校验函数调用，解决 .git missing
     sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon; sed -i "s/require_git_commit/#require_git_commit/g" hack/make.sh; ./hack/make.sh binary|g' "$DOCKERD_MK"
-    cat "$DOCKERD_MK" | grep -E "hack/make.sh|Verify"
+
+    # 调试输出，确认修改是否成功，看action日志
+    echo "===== dockerd Makefile PREPARE_TARGET line ====="
+    grep "^PREPARE_TARGET" "$DOCKERD_MK"
+    echo "===== dockerd make.sh command ====="
+    grep "hack/make.sh" "$DOCKERD_MK"
 fi
 
 ./scripts/feeds update -a
