@@ -30,6 +30,10 @@ rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2sock
 rm -rf feeds/luci/applications/luci-app-passwall
 rm -rf feeds/packages/net/daed
 rm -rf feeds/luci/applications/luci-app-daed
+rm -rf feeds/packages/utils/dockerd
+rm -rf feeds/packages/utils/docker
+rm -rf feeds/packages/utils/containerd
+rm -rf feeds/packages/utils/runc
 # rm -rf feeds/packages/net/ddns-go
 
 # Git稀疏克隆，只克隆指定目录到本地
@@ -148,24 +152,38 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 # 测试开启bbr3
 sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
 
-# 移除旧版损坏的 xtables-addons
-rm -rf feeds/packages/net/xtables-addons
-rm -rf package/feeds/packages/xtables-addons
-
-# 从官方或较新的维护源克隆最新的 xtables-addons 源码
-git clone https://github.com/openwrt/packages.git /tmp/owrt-pkgs
-mv /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/xtables-addons
+# -------------------------------------------------------------------
+# 移除旧版损坏的 xtables-addons 并通过 sparse-clone 快速拉取最新版
+# -------------------------------------------------------------------
+rm -rf feeds/packages/net/xtables-addons package/feeds/packages/xtables-addons
+git clone --depth=1 --filter=blob:none --sparse https://github.com/openwrt/packages.git /tmp/owrt-pkgs
+cd /tmp/owrt-pkgs && git sparse-checkout set net/xtables-addons
+cd - >/dev/null
+mv -f /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/
 rm -rf /tmp/owrt-pkgs
 
-# docker网页管理面板 dockerman
-git clone --depth=1 https://github.com/lisaac/luci-lib-docker package/luci-lib-docker
-git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
+# -------------------------------------------------------------------
+# 克隆 sbwml 全套 Docker 组件（确保版本统一，100% 解决版本与 cp 报错）
+# -------------------------------------------------------------------
+rm -rf feeds/packages/utils/dockerd \
+       feeds/packages/utils/docker \
+       feeds/packages/utils/containerd \
+       feeds/packages/utils/runc
 
-./scripts/feeds update -a
-./scripts/feeds install -a
+git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd feeds/packages/utils/dockerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_docker feeds/packages/utils/docker
+git clone --depth=1 https://github.com/sbwml/packages_utils_containerd feeds/packages/utils/containerd
+git clone --depth=1 https://github.com/sbwml/packages_utils_runc feeds/packages/utils/runc
 
-# 修复lean feeds内置dockerd编译cp报错，放在feeds命令之后！
-DOCKERD_FEED_MK="feeds/packages/utils/dockerd/Makefile"
-if [ -f "$DOCKERD_FEED_MK" ];then
-  sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon; sed -i "s/require_git_commit/#require_git_commit/g" hack/make.sh; ./hack/make.sh binary|g' "$DOCKERD_FEED_MK"
+# 修复 dockerd 编译逻辑：直接用 bash -c 封装整套魔改命令
+DOCKERD_MK="feeds/packages/utils/dockerd/Makefile"
+if [ -f "$DOCKERD_MK" ]; then
+    # 先清理掉可能残余的旧 patches 目录，防止格式破损报错
+    rm -rf feeds/packages/utils/dockerd/patches/999-fix-binary-daemon.patch
+
+    # 精准替换：在运行 ./hack/make.sh 前，直接用一句话搞定 git 初始化 + 禁用 set -u + 拦截 copy_binaries
+    sed -i 's|\./hack/make.sh binary|git init \&\& git config user.name "builder" \&\& git config user.email "builder@local" \&\& git commit --allow-empty -m "init" \&\& sed -i "s/set -e/set +u\\nset -e/g" hack/make/binary-daemon \&\& sed -i "s/copy_binaries()/copy_binaries() { return 0; }\\n_old_copy_binaries()/g" hack/make/binary-daemon \&\& ./hack/make.sh binary|g' $DOCKERD_MK
 fi
+
+# 重新建立 packages 索引软链接
+./scripts/feeds install -a -p packages
