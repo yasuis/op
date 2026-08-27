@@ -30,10 +30,6 @@ rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2sock
 rm -rf feeds/luci/applications/luci-app-passwall
 rm -rf feeds/packages/net/daed
 rm -rf feeds/luci/applications/luci-app-daed
-rm -rf feeds/packages/utils/dockerd
-rm -rf feeds/packages/utils/docker
-rm -rf feeds/packages/utils/containerd
-rm -rf feeds/packages/utils/runc
 # rm -rf feeds/packages/net/ddns-go
 
 # Git稀疏克隆，只克隆指定目录到本地
@@ -162,27 +158,8 @@ git clone https://github.com/openwrt/packages.git /tmp/owrt-pkgs
 mv /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/xtables-addons
 rm -rf /tmp/owrt-pkgs
 
-# 克隆 sbwml 全套 Docker 组件（确保版本统一）
-rm -rf feeds/packages/utils/dockerd feeds/packages/utils/docker feeds/packages/utils/containerd feeds/packages/utils/runc
-git clone --depth=1 https://github.com/sbwml/packages_utils_dockerd package/dockerd
-git clone --depth=1 https://github.com/sbwml/packages_utils_docker package/docker
-git clone --depth=1 https://github.com/sbwml/packages_utils_containerd package/containerd
-git clone --depth=1 https://github.com/sbwml/packages_utils_runc package/runc
-
-DOCKERD_MK="package/dockerd/Makefile"
-if [ -f "$DOCKERD_MK" ]; then
-    # 核心修复：直接清空 PREPARE_TARGET，彻底干掉所有版本校验脚本，不再执行grep tini/runc/containerd
-    sed -i 's/^PREPARE_TARGET:=.*/PREPARE_TARGET:=/' "$DOCKERD_MK"
-
-    # 修复 copy_ 报错 + 注释git commit校验函数调用，解决 .git missing
-    sed -i 's|\./hack/make.sh binary|sed -i "/copy_/d" hack/make/binary-daemon; sed -i "s/require_git_commit/#require_git_commit/g" hack/make.sh; ./hack/make.sh binary|g' "$DOCKERD_MK"
-
-    # 调试输出，确认修改是否成功，看action日志
-    echo "===== dockerd Makefile PREPARE_TARGET line ====="
-    grep "^PREPARE_TARGET" "$DOCKERD_MK"
-    echo "===== dockerd make.sh command ====="
-    grep "hack/make.sh" "$DOCKERD_MK"
-fi
+# docker网页管理面板 dockerman
+git clone --depth=1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
