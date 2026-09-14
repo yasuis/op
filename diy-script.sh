@@ -155,12 +155,12 @@ sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/
 # -------------------------------------------------------------------
 # 移除旧版损坏的 xtables-addons 并通过 sparse-clone 快速拉取最新版
 # -------------------------------------------------------------------
-rm -rf feeds/packages/net/xtables-addons package/feeds/packages/xtables-addons
-git clone --depth=1 --filter=blob:none --sparse https://github.com/openwrt/packages.git /tmp/owrt-pkgs
-cd /tmp/owrt-pkgs && git sparse-checkout set net/xtables-addons
-cd - >/dev/null
-mv -f /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/
-rm -rf /tmp/owrt-pkgs
+# rm -rf feeds/packages/net/xtables-addons package/feeds/packages/xtables-addons
+# git clone --depth=1 --filter=blob:none --sparse https://github.com/openwrt/packages.git /tmp/owrt-pkgs
+# cd /tmp/owrt-pkgs && git sparse-checkout set net/xtables-addons
+# cd - >/dev/null
+# mv -f /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/
+# rm -rf /tmp/owrt-pkgs
 
 # -------------------------------------------------------------------
 # 克隆 sbwml 全套 Docker 组件（确保版本统一，100% 解决版本与 cp 报错）
