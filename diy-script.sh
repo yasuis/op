@@ -121,9 +121,20 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armsr/g' package/lean/autoco
 sed -i 's/os.date()/os.date("%a %Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/*/index.htm
 
 # 修改版本为编译日期
+# date_version=$(date +"%y.%m.%d")
+# sed -i "s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g" package/lean/default-settings/files/zzz-default-settings
+# sed -i "s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g" package/lean/default-settings/files/zzz-default-settings
+# 1. 直接覆盖 include/version.mk 与生成源，截断后续拼接
 date_version=$(date +"%y.%m.%d")
-sed -i "s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g" package/lean/default-settings/files/zzz-default-settings
-sed -i "s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g" package/lean/default-settings/files/zzz-default-settings
+echo "R${date_version} by yasui" > version
+
+# 2. 彻底重写 zzz-default-settings 中对 /etc/openwrt_release 的写入逻辑
+# 直接把整个修改 openwrt_release 的语句改成硬编码目标值
+sed -i "/DISTRIB_REVISION/c\sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
+sed -i "/DISTRIB_DESCRIPTION/c\sed -i \"s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
+
+# 3. 兜底策略：在系统启动末尾 (rc.local) 再强行重写一次，保证首页读到的版本 100% 纯净
+sed -i "/exit 0/i sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g\" /etc/openwrt_release" package/base-files/files/etc/rc.local
 
 # 修复 hostapd 报错
 # cp -f $GITHUB_WORKSPACE/script/011-fix-mbo-modules-build.patch package/network/services/hostapd/patches/011-fix-mbo-modules-build.patch
