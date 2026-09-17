@@ -124,17 +124,12 @@ sed -i 's/os.date()/os.date("%a %Y-%m-%d %H:%M:%S")/g' package/lean/autocore/fil
 # date_version=$(date +"%y.%m.%d")
 # sed -i "s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g" package/lean/default-settings/files/zzz-default-settings
 # sed -i "s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g" package/lean/default-settings/files/zzz-default-settings
-# 1. 直接覆盖 include/version.mk 与生成源，截断后续拼接
 date_version=$(date +"%y.%m.%d")
-echo "R${date_version} by yasui" > version
-
-# 2. 彻底重写 zzz-default-settings 中对 /etc/openwrt_release 的写入逻辑
-# 直接把整个修改 openwrt_release 的语句改成硬编码目标值
-sed -i "/DISTRIB_REVISION/c\sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
-sed -i "/DISTRIB_DESCRIPTION/c\sed -i \"s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
-
-# 3. 兜底策略：在系统启动末尾 (rc.local) 再强行重写一次，保证首页读到的版本 100% 纯净
-sed -i "/exit 0/i sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g\" /etc/openwrt_release" package/base-files/files/etc/rc.local
+NEW_REV="R${date_version} by yasui"
+# 修改 zzz-default-settings 里的 DISTRIB_REVISION，直接正则匹配替换引号内所有内容
+sed -i "s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='${NEW_REV}'/g" package/lean/default-settings/files/zzz-default-settings
+# 同步修改 openwrt_release，这一步是关键，干掉git自动写入的哈希
+sed -i "s/DISTRIB_REVISION=.*/DISTRIB_REVISION=\"${NEW_REV}\"/g" package/base-files/files/etc/openwrt_release
 
 # 修复 hostapd 报错
 # cp -f $GITHUB_WORKSPACE/script/011-fix-mbo-modules-build.patch package/network/services/hostapd/patches/011-fix-mbo-modules-build.patch
