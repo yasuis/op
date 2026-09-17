@@ -121,15 +121,9 @@ sed -i 's/TARGET_rockchip/TARGET_rockchip\|\|TARGET_armsr/g' package/lean/autoco
 sed -i 's/os.date()/os.date("%a %Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/*/index.htm
 
 # 修改版本为编译日期
-# date_version=$(date +"%y.%m.%d")
-# sed -i "s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g" package/lean/default-settings/files/zzz-default-settings
-# sed -i "s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g" package/lean/default-settings/files/zzz-default-settings
 date_version=$(date +"%y.%m.%d")
-NEW_REV="R${date_version} by yasui"
-# 修改 zzz-default-settings 里的 DISTRIB_REVISION，直接正则匹配替换引号内所有内容
-sed -i "s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='${NEW_REV}'/g" package/lean/default-settings/files/zzz-default-settings
-# 同步修改 openwrt_release，这一步是关键，干掉git自动写入的哈希
-sed -i "s/DISTRIB_REVISION=.*/DISTRIB_REVISION=\"${NEW_REV}\"/g" package/base-files/files/etc/openwrt_release
+sed -i "/DISTRIB_REVISION/c\sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
+sed -i "/DISTRIB_DESCRIPTION/c\sed -i \"s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
 
 # 修复 hostapd 报错
 # cp -f $GITHUB_WORKSPACE/script/011-fix-mbo-modules-build.patch package/network/services/hostapd/patches/011-fix-mbo-modules-build.patch
