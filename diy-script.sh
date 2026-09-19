@@ -122,7 +122,7 @@ sed -i 's/os.date()/os.date("%a %Y-%m-%d %H:%M:%S")/g' package/lean/autocore/fil
 
 # 修改版本为编译日期
 date_version=$(date +"%y.%m.%d")
-sed -i "/DISTRIB_REVISION/c\sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui'/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
+sed -i "/DISTRIB_REVISION/c\sed -i \"s/DISTRIB_REVISION='.*'/DISTRIB_REVISION='R${date_version} by yasui  '/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
 sed -i "/DISTRIB_DESCRIPTION/c\sed -i \"s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCRIPTION='LEDE '/g\" /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
 
 # 修复 hostapd 报错
