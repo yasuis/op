@@ -29,7 +29,13 @@ rm -rf feeds/packages/lang/golang
 rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,trojan-plus,tuic-client,v2ray-plugin,xray-plugin,geoview,shadow-tls}
 rm -rf feeds/luci/applications/luci-app-passwall
 rm -rf feeds/packages/net/daed
+rm -rf feeds/packages/net/dae
 rm -rf feeds/luci/applications/luci-app-daed
+rm -rf feeds/luci/applications/luci-app-dae
+rm -rf package/feeds/packages/daed
+rm -rf package/feeds/packages/dae
+rm -rf package/feeds/luci/luci-app-daed
+rm -rf package/feeds/luci/luci-app-dae
 # rm -rf feeds/packages/utils/dockerd
 # rm -rf feeds/packages/utils/docker
 # rm -rf feeds/packages/utils/containerd
@@ -64,7 +70,8 @@ git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
 # git clone --depth=1 https://github.com/fw876/helloworld.git package/luci-app-ssr-plus
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
 # git clone https://github.com/QiuSimons/luci-app-daed package/dae
-git clone https://github.com/QiuSimons/luci-app-daed package/luci-app-daed
+rm -rf package/luci-app-daede
+git clone --depth=1 https://github.com/kenzok8/openwrt-daede.git package/luci-app-daede
 
 # Themes
 git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
