@@ -58,8 +58,19 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           # sudo -E apt install scdoc
-          sudo -E apt-get install -y dwarves npm
+          sudo -E apt-get install -y dwarves npm clang llvm lld libbpf-dev
           sudo -E npm install -g pnpm
+
+          # 确保全局存在 clang 和 llvm-strip 软链接
+          if ! command -v clang &> /dev/null; then
+            CLANG_BIN=$(which clang-15 clang-14 clang-13 clang-12 2>/dev/null | head -n 1)
+            [ -n "$CLANG_BIN" ] && sudo ln -sf "$CLANG_BIN" /usr/bin/clang
+          fi
+          if ! command -v llvm-strip &> /dev/null; then
+            LLVM_STRIP_BIN=$(which llvm-strip-15 llvm-strip-14 llvm-strip-13 llvm-strip-12 2>/dev/null | head -n 1)
+            [ -n "$LLVM_STRIP_BIN" ] && sudo ln -sf "$LLVM_STRIP_BIN" /usr/bin/llvm-strip
+          fi
+          clang --version || true
 
     - name: Combine Disks
       uses: easimon/maximize-build-space@master
