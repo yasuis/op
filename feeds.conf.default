@@ -3,6 +3,8 @@
 #src-git passwall2 https://github.com/Openwrt-Passwall/openwrt-passwall2.git;main
 src-git helloworld https://github.com/fw876/helloworld;master
 #src-git helloworld https://github.com/fw876/helloworld.git
+src-git smpackage https://github.com/kenzok8/small-package.git
+src-git daed https://github.com/kenzok8/openwrt-daede.git
 
 src-git packages https://github.com/coolsnowwolf/packages.git;master
 src-git luci https://github.com/coolsnowwolf/luci.git;master
