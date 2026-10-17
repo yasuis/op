@@ -80,7 +80,9 @@ git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git packa
 # git clone --depth=1 https://github.com/sbwml/luci-app-argon-config.git package/luci-app-argon-config
 
 # 更改 Argon 主题背景
-cp -f $GITHUB_WORKSPACE/images/bg1.jpg package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
+#cp -f $GITHUB_WORKSPACE/images/bg1.jpg package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
+mkdir -p files/www/luci-static/argon/background
+cp -f $GITHUB_WORKSPACE/images/bg1.jpg files/www/luci-static/argon/background/bg1.jpg
 
 # SmartDNS
 git clone --depth=1 -b master https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
