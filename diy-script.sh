@@ -61,17 +61,16 @@ git_sparse_clone main https://github.com/Lienol/openwrt-package luci-app-filebro
 git clone https://github.com/sbwml/packages_lang_golang -b 27.x feeds/packages/lang/golang
 
 # 科学上网插件
-# git clone -b main https://github.com/Openwrt-Passwall/openwrt-passwall package/psw
-# git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/pswcore
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/passwall-packages
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/passwall-luci
 git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
-# git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
-# git clone --depth=1 https://github.com/fw876/helloworld.git package/luci-app-ssr-plus
-# git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
-# git clone https://github.com/QiuSimons/luci-app-daed package/dae
 rm -rf package/luci-app-daede
 git clone --depth=1 https://github.com/kenzok8/openwrt-daede.git package/luci-app-daede
+# git clone https://github.com/QiuSimons/luci-app-dae package/dae
+
+# 移除 daede / daed 对 vmlinux-btf 的虚拟包依赖检查
+find package/ feeds/ -name "Makefile" | grep -E "daed|daede" | xargs sed -i 's/+vmlinux-btf//g'
+find package/ feeds/ -name "Makefile" | grep -E "daed|daede" | xargs sed -i 's/vmlinux-btf//g'
 
 # Themes
 git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
