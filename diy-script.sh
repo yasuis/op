@@ -169,6 +169,6 @@ sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/
 # cd - >/dev/null
 # mv -f /tmp/owrt-pkgs/net/xtables-addons feeds/packages/net/
 # rm -rf /tmp/owrt-pkgs
-
+sed -i 's/+kmod-fs-nfs-common-rpcsec//g' package/kernel/linux/modules/fs.mk
 ./scripts/feeds update -a
 ./scripts/feeds install -a
