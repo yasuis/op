@@ -71,6 +71,10 @@ git clone --depth=1 https://github.com/kenzok8/openwrt-daede.git package/luci-ap
 # 移除 daede / daed 对 vmlinux-btf 的虚拟包依赖检查
 find package/ feeds/ -name "Makefile" | grep -E "daed|daede" | xargs sed -i 's/+vmlinux-btf//g'
 find package/ feeds/ -name "Makefile" | grep -E "daed|daede" | xargs sed -i 's/vmlinux-btf//g'
+# 启用 Linux 6.7+ 的 Netkit 驱动支持
+for config_file in target/linux/x86/config-*; do
+  [ -f "$config_file" ] && echo "CONFIG_NETKIT=y" >> "$config_file"
+done
 
 # Themes
 git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
