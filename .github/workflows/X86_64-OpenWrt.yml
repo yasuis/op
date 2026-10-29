@@ -71,7 +71,7 @@ jobs:
         remove-docker-images: 'true'
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@main
 
     - name: Clone Source Code
       run: |
