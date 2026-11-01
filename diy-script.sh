@@ -67,8 +67,7 @@ git clone https://github.com/Openwrt-Passwall/openwrt-passwall-packages package/
 git clone https://github.com/Openwrt-Passwall/openwrt-passwall package/passwall-luci
 git clone https://github.com/sbwml/openwrt_helloworld package/helloworld
 rm -rf package/luci-app-daede
-# git clone --depth=1 https://github.com/kenzok8/openwrt-daede.git package/luci-app-daede
-git clone --depth 1 https://github.com/kenzok8/openwrt-daede package/openwrt-daede
+git clone --depth=1 https://github.com/kenzok8/openwrt-daede.git package/luci-app-daede
 # git clone https://github.com/QiuSimons/luci-app-dae package/dae
 
 # 移除 daede / daed 对 vmlinux-btf 的虚拟包依赖检查
