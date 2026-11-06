@@ -38,6 +38,8 @@ rm -rf package/feeds/luci/luci-app-daed
 rm -rf package/feeds/luci/luci-app-dae
 rm -rf package/lean/daed
 rm -rf package/lean/dae
+rm -rf feeds/packages/net/openvswitch
+rm -rf feeds/packages/net/ovsd
 # rm -rf feeds/packages/utils/dockerd
 # rm -rf feeds/packages/utils/docker
 # rm -rf feeds/packages/utils/containerd
@@ -164,6 +166,9 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 
 # 测试开启bbr3
 sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
+
+# 移除克隆仓库中冲突的 mihomo 变体定义
+find package/ feeds/ -name "mihomo-alpha" -exec rm -rf {} + 2>/dev/null || true
 
 # -------------------------------------------------------------------
 # 移除旧版损坏的 xtables-addons 并通过 sparse-clone 快速拉取最新版
