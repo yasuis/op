@@ -139,6 +139,9 @@ sed -i "s/${orig_version}/R${date_version} by yasui/g" package/lean/default-sett
 find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
+# 移除克隆仓库中冲突的 mihomo 变体定义
+find package/ feeds/ -name "mihomo-alpha" -exec rm -rf {} + 2>/dev/null || true
+
 # fstools
 # rm -rf package/system/fstools
 # git clone https://github.com/sbwml/package_system_fstools -b openwrt-24.10 package/system/fstools
