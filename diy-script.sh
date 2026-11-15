@@ -100,8 +100,8 @@ git clone --depth=1 https://github.com/ximiTech/msd_lite package/msd_lite
 
 # MosDNS
 git clone --depth=1 https://github.com/sbwml/luci-app-mosdns -b v5 package/mosdns
-git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mosdns
-git clone --depth=1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
+# git clone --depth=1 https://github.com/sbwml/luci-app-mosdns package/luci-app-mosdns
+# git clone --depth=1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
 
 # Alist
 # rm -rf feeds/packages/net/alist
@@ -195,5 +195,9 @@ EOF
 # 在 .config 中开启该模块
 echo "CONFIG_PACKAGE_kmod-netkit=y" >> .config
 sed -i 's/+kmod-fs-nfs-common-rpcsec//g' package/kernel/linux/modules/fs.mk
-./scripts/feeds update -a
+
+# 修复 gettext-0.22.5 host 编译时 gnulib exitfail.h 补丁冲突
+sed -i 's/PKG_FIXUP:=autoreconf/PKG_FIXUP:=patch-libtool/g' package/libs/gettext-full/Makefile
+
+rm -rf tmp
 ./scripts/feeds install -a
