@@ -197,7 +197,8 @@ echo "CONFIG_PACKAGE_kmod-netkit=y" >> .config
 sed -i 's/+kmod-fs-nfs-common-rpcsec//g' package/kernel/linux/modules/fs.mk
 
 # 修复 gettext-0.22.5 host 编译时 gnulib exitfail.h 补丁冲突
-sed -i 's/PKG_FIXUP:=autoreconf/PKG_FIXUP:=patch-libtool/g' package/libs/gettext-full/Makefile
+sed -i '/PKG_FIXUP/d' package/libs/gettext-full/Makefile
+sed -i '/gnulib-tool/d' package/libs/gettext-full/Makefile
 
 rm -rf tmp
 ./scripts/feeds install -a
