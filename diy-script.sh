@@ -196,16 +196,5 @@ EOF
 echo "CONFIG_PACKAGE_kmod-netkit=y" >> .config
 sed -i 's/+kmod-fs-nfs-common-rpcsec//g' package/kernel/linux/modules/fs.mk
 
-# 从官方 OpenWrt (openwrt-24.10) 同步替换 tools/gnulib、gettext-full 和 gnulib-l10n
-rm -rf tools/gnulib package/libs/gettext-full package/libs/gnulib-l10n
-git clone --depth=1 --filter=blob:none --sparse -b openwrt-24.10 https://github.com/openwrt/openwrt.git /tmp/owrt-sync
-cd /tmp/owrt-sync
-git sparse-checkout set tools/gnulib package/libs/gettext-full package/libs/gnulib-l10n
-cd - >/dev/null
-mv -f /tmp/owrt-sync/tools/gnulib tools/
-mv -f /tmp/owrt-sync/package/libs/gettext-full package/libs/
-mv -f /tmp/owrt-sync/package/libs/gnulib-l10n package/libs/
-rm -rf /tmp/owrt-sync
-
 rm -rf tmp
 ./scripts/feeds install -a
