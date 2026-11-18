@@ -79,6 +79,17 @@ for config_file in target/linux/rockchip/config-* target/linux/x86/config-*; do
   [ -f "$config_file" ] && echo "CONFIG_NETKIT=y" >> "$config_file"
 done
 
+# 替换为 Vantage 主题
+rm -rf package/luci-theme-vantage
+git clone --depth=1 https://github.com/anothaDev/luci-theme-vantage.git package/luci-theme-vantage
+# 写入配置以自动选中 Vantage 主题及其控制面板、中文包
+cat >> .config <<EOF
+CONFIG_PACKAGE_luci-theme-vantage=y
+CONFIG_PACKAGE_luci-app-vantage=y
+CONFIG_PACKAGE_luci-i18n-vantage-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-vantage-theme-zh-cn=y
+EOF
+
 # Themes
 git clone --depth=1 https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
 git clone --depth=1 https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
@@ -162,7 +173,8 @@ sed -i "/DISTRIB_DESCRIPTION/c\sed -i \"s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCR
 
 # 取消主题默认设置
 find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+sed -i 's/luci-theme-bootstrap/luci-theme-vantage/g' feeds/luci/collections/luci/Makefile
 
 # 测试开启bbr3
 sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
