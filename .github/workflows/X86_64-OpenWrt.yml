@@ -11,7 +11,7 @@ env:
   CONFIG_FILE: configs/x86_64.config
   DIY_SCRIPT: diy-script.sh
   CLASH_KERNEL: amd64
-  CACHE_TOOLCHAIN: true
+  CACHE_TOOLCHAIN: false
   UPLOAD_BIN_DIR: false
   FIRMWARE_RELEASE: true
   FIRMWARE_TAG: X86_64
