@@ -171,10 +171,18 @@ sed -i "/DISTRIB_DESCRIPTION/c\sed -i \"s/DISTRIB_DESCRIPTION='.*'/DISTRIB_DESCR
 # find package/*/ -maxdepth 2 -path "*/Makefile" | xargs -i sed -i 's/PKG_SOURCE_URL:=@GHREPO/PKG_SOURCE_URL:=https:\/\/github.com/g' {}
 # find package/*/ -maxdepth 2 -path "*/Makefile" | xargs -i sed -i 's/PKG_SOURCE_URL:=@GHCODELOAD/PKG_SOURCE_URL:=https:\/\/codeload.github.com/g' {}
 
-# 取消主题默认设置
+# 取消所有主题自带的默认主题抢占（防止 argon 抢占）
 find package/luci-theme-*/* -type f -name '*luci-theme-*' -print -exec sed -i '/set luci.main.mediaurlbase/d' {} \;
-# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
+
+# 修改 LuCI 默认依赖主题为 vantage
 sed -i 's/luci-theme-bootstrap/luci-theme-vantage/g' feeds/luci/collections/luci/Makefile
+sed -i 's/luci-theme-bootstrap/luci-theme-vantage/g' feeds/luci/collections/luci-light/Makefile 2>/dev/null || true
+
+# 清理 zzz-default-settings 中原有的主题设置，并在最后强制指定默认主题为 vantage
+sed -i '/luci.main.mediaurlbase/d' package/lean/default-settings/files/zzz-default-settings
+sed -i '/exit 0/i uci set luci.main.mediaurlbase="/luci-static/vantage"' package/lean/default-settings/files/zzz-default-settings
+sed -i '/exit 0/i uci commit luci' package/lean/default-settings/files/zzz-default-settings
+# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # 测试开启bbr3
 sed -i '/exit 0/i [ -e /sys/module/tcp_bbr3 ] && echo bbr3 > /proc/sys/net/ipv4/tcp_congestion_control' package/base-files/files/etc/rc.local
