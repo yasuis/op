@@ -217,11 +217,11 @@ echo "CONFIG_PACKAGE_kmod-netkit=y" >> .config
 sed -i 's/+kmod-fs-nfs-common-rpcsec//g' package/kernel/linux/modules/fs.mk
 
 # 关闭生成 profiles.json 概览信息（对 x86 固件刷机和使用无任何影响）
-sed -i '/CONFIG_JSON_OVERVIEW_IMAGE_INFO/d' .config
-echo "# CONFIG_JSON_OVERVIEW_IMAGE_INFO is not set" >> .config
+# sed -i '/CONFIG_JSON_OVERVIEW_IMAGE_INFO/d' .config
+# echo "# CONFIG_JSON_OVERVIEW_IMAGE_INFO is not set" >> .config
 
 # 双保险：修复 json_overview_image_info.py，强制只取最后 2 行有效输出，忽略前面的警告行
-sed -i 's/\.splitlines()/\.splitlines()[-2:]/g' scripts/json_overview_image_info.py
+# sed -i 's/\.splitlines()/\.splitlines()[-2:]/g' scripts/json_overview_image_info.py
 
 rm -rf tmp
 ./scripts/feeds install -a
